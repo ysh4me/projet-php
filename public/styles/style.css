@@ -1,0 +1,304 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5%;
+  background: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.navbar .navbar-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+}
+.navbar .nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+.navbar .nav-links li a {
+  color: #333;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.3s ease-in-out;
+}
+.navbar .nav-links li a:hover {
+  color: #FF6347;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10% 5%;
+  height: 100vh;
+  background: url("../images/hero-background.jpg") no-repeat center center/cover;
+  color: #fff;
+}
+.hero .container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+.hero .hero-text {
+  max-width: 50%;
+  margin-right: 2rem;
+}
+.hero .hero-text h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.hero .hero-text p {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.hero .hero-text .btn {
+  background-color: #ff6200;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.hero .hero-text .btn:hover {
+  background-color: #ff4500;
+}
+.hero .hero-image {
+  flex-grow: 1;
+}
+.hero .hero-image .image-container {
+  width: 100%;
+  height: 100%;
+  background: url("your-image.jpg") center/cover no-repeat;
+  border-radius: 10px;
+}
+
+.share {
+  padding: 4rem 5%;
+  text-align: center;
+}
+.share h2 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+}
+.share .image-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+.share .image-grid .image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.share .image-grid .image-container .image {
+  height: 50vh;
+  width: 20vw;
+  border-radius: 0.5rem;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+.share .image-grid .image-container .info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 0.5rem;
+  position: absolute;
+  bottom: -4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: bottom 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+.share .image-grid .image-container .info p {
+  font-size: 1rem;
+  color: white;
+  background-color: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  text-align: left;
+  width: max-content;
+}
+.share .image-grid .image-container .info .actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.share .image-grid .image-container .info .actions button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.share .image-grid .image-container .info .actions button:hover {
+  transform: scale(1.2);
+}
+.share .image-grid .image-container .info .actions .like {
+  color: green;
+}
+.share .image-grid .image-container .info .actions .dislike {
+  color: red;
+}
+.share .image-grid .image-container .info .actions .rating {
+  font-size: 1rem;
+  color: gold;
+}
+.share .image-grid .image-container:hover .image {
+  transform: scale(1.1);
+  filter: brightness(0.8);
+}
+.share .image-grid .image-container:hover .info {
+  bottom: 1rem;
+  opacity: 1;
+}
+
+.latest-stories {
+  padding: 4rem 5%;
+  text-align: center;
+}
+.latest-stories h2 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+}
+.latest-stories .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.latest-stories .featured-image {
+  width: 45vw;
+  height: 60vh;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+}
+.latest-stories .featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+.latest-stories .small-image-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.latest-stories .small-image-grid.left {
+  left: 5vw;
+}
+.latest-stories .small-image-grid.right {
+  right: 5vw;
+}
+.latest-stories .small-image-grid .small-image-container {
+  width: 12vw;
+  height: 15vh;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+}
+.latest-stories .small-image-grid .small-image-container:hover {
+  transform: scale(1.1);
+}
+.latest-stories .small-image-grid .small-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+.latest-stories .small-image-grid .small-image-container p {
+  font-size: 0.9rem;
+  color: white;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: max-content;
+  text-align: center;
+}
+
+.subscribe {
+  background-color: #f5f5f5;
+  padding: 4rem 5%;
+  text-align: center;
+  border-radius: 0.5rem;
+}
+.subscribe h2 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+.subscribe .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.subscribe input {
+  width: 100%;
+  max-width: 400px;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  box-sizing: border-box;
+}
+.subscribe input::placeholder {
+  color: #888;
+}
+.subscribe .btn {
+  background-color: #FF6347;
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease;
+}
+.subscribe .btn:hover {
+  background-color: #FF6347;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  padding: 2rem 5%;
+  text-align: center;
+}
+footer p {
+  font-size: 1rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/*# sourceMappingURL=style.css.map */

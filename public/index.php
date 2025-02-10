@@ -1,6 +1,139 @@
-<?php
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuddyShotz</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+    <nav class="navbar">
+    <div class="navbar-brand">BuddyShotz</div>
+    <ul class="nav-links">
+        <li><a href="#">Feed</a></li>
+        <li><a href="#">Upload</a></li>
+        <li><a href="#">Publish</a></li>
+        <li><a href="#">Sign Up</a></li>
+    </ul>
+</nav>
+        </div>
+    </header>
 
-require_once __DIR__ . '/../vendor/autoload.php';
+    <section class="hero">
+    <div class="container">
+    <div class="hero-image">
+    <div class="image-container">
+        <div class="hero-text">
+            <h2>Discover the world's Hidden Wonders</h2>
+            <p>Wonders</p>
+            <button class="btn">JOIN US</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-$router = require '../app/routes.php';
-$router->route($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+<section class="share">
+    <div class="container">
+        <h2>Share Your Moment With Us</h2>
+        <div class="image-grid">
+            <div class="image-container">
+                <div class="image" style="background-image: url('../images/1.jpg');"></div>
+                <br>
+                <p>India</p>
+                <div class="actions">
+                        <button class="like">👍</button>
+                        <button class="dislike">👎</button>
+                        <span class="rating">⭐ 3.8</span>
+                    </div>
+            </div>
+            <div class="image-container">
+                <div class="image" style="background-image: url('../images/2.jpg');"></div>
+                <br>
+                <p>Australie</p>
+                <div class="actions">
+                        <button class="like">👍</button>
+                        <button class="dislike">👎</button>
+                        <span class="rating">⭐ 3.8</span>
+                    </div>
+            </div>
+            <div class="image-container">
+                <div class="image" style="background-image: url('../images/3.jpg');"></div>
+                <br>
+                <p>Turkey</p>
+                <div class="actions">
+                        <button class="like">👍</button>
+                        <button class="dislike">👎</button>
+                        <span class="rating">⭐ 3.8</span>
+                    </div>
+            </div>
+            <div class="image-container">
+                <div class="image" style="background-image: url('../images/4.jpg');"></div>
+                <br>
+                <p>North America</p>
+                <div class="actions">
+                        <button class="like">👍</button>
+                        <button class="dislike">👎</button>
+                        <span class="rating">⭐ 3.8</span>
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="latest-stories">
+    <h2>Latest Stories</h2>
+    <div class="container">
+        <div class="small-image-grid left">
+            <div class="small-image-container">
+                <img src="../images/6.jpg" alt="Small Image 1">
+                <p>Description 1</p>
+            </div>
+            <div class="small-image-container">
+                <img src="../images/5.jpg" alt="Small Image 2">
+                <p>Description 2</p>
+            </div>
+            <div class="small-image-container">
+                <img src="../images/5.jpg" alt="Small Image 3">
+                <p>Description 3</p>
+            </div>
+        </div>
+        <div class="featured-image">
+            <img src="../images/7.jpg" alt="Main Image">
+        </div>
+        <div class="small-image-grid right">
+            <div class="small-image-container">
+                <img src="../images/6.jpg" alt="Small Image 4">
+                <p>Description 4</p>
+            </div>
+            <div class="small-image-container">
+                <img src="../images/5.jpg" alt="Small Image 5">
+                <p>Description 5</p>
+            </div>
+            <div class="small-image-container">
+                <img src="../images/5.jpg" alt="Small Image 6">
+                <p>Description 6</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <section class="subscribe">
+        <div class="container">
+            <h2>Get Your Travel Inspiration Straight To Your Inbox</h2>
+            <input type="text" placeholder="Enter your email">
+            <button class="btn">Get Started</button>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 BuddyShotz. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
