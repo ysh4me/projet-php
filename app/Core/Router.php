@@ -28,27 +28,53 @@ class Router {
     public function route($requestUri, $requestMethod) {
         $uri = strtok($requestUri, '?');
         $action = $this->routes[$requestMethod][$uri] ?? null;
-
-        if(!$action) {
+    
+        if (!$action) {
             http_response_code(404);
             echo '404 Not Found';
             exit;
         }
-
-        [$controller, $method] = explode('@', $action);
-        $controller = "App\\Controllers\\$controller";
-
-        if (!class_exists($controller)) {
-            throw new \Exception("Controller not found: $controller");
+    
+        if ($action instanceof \Closure) {
+            echo $action();
+            return;
         }
-
-        if (!method_exists($controller, $method)) {
-            throw new \Exception("Method not found: $method in controller $controller");
+    
+        if (is_string($action)) {
+            [$controller, $method] = explode('@', $action);
+            $controller = "App\\Controllers\\$controller";
+    
+            if (!class_exists($controller)) {
+                throw new \Exception("Controller not found: $controller");
+            }
+    
+            if (!method_exists($controller, $method)) {
+                throw new \Exception("Method not found: $method in controller $controller");
+            }
+    
+            $instance = new $controller();
+            echo $instance->$method();
+            return;
         }
-
-        $instance = new $controller();
-        echo $instance->$method();
-    }
+    
+        if (is_array($action) && count($action) === 2) {
+            [$controller, $method] = $action;
+            
+            if (!class_exists($controller)) {
+                throw new \Exception("Controller class not found: $controller");
+            }
+    
+            if (!method_exists($controller, $method)) {
+                throw new \Exception("Method not found: $method in controller $controller");
+            }
+    
+            $instance = new $controller();
+            echo $instance->$method();
+            return;
+        }
+    
+        throw new \Exception("Invalid route definition for URI: $uri");
+    }    
 
     public function getRoutes(): array {
         return $this->routes;
