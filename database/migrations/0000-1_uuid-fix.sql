@@ -8,6 +8,7 @@ CREATE TABLE users (
     last_name VARCHAR(100) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
+    is_verified BOOLEAN DEFAULT FALSE,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

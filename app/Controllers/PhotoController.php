@@ -7,9 +7,25 @@ use App\Models\PhotoModel;
 
 class PhotoController extends Controller
 {
+    private PhotoModel $photoModel;
+
+    public function __construct()
+    {
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            session_write_close(); 
+        }
+    
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+    
+        $this->photoModel = new PhotoModel();
+    }
+
     public function uploadPhoto()
     {
-        session_start();
+
+        $testUserId = "550e8400-e29b-41d4-a716-446655440000";
 
         if (!isset($_SESSION['user_id'])) {
             $_SESSION['error'] = "Vous devez être connecté pour uploader une photo.";
@@ -62,7 +78,8 @@ class PhotoController extends Controller
 
         $photoModel = new PhotoModel();
         $saved = $photoModel->savePhoto(
-            (string) $_SESSION['user_id'],  
+            $testUserId,
+                        // (string) $_SESSION['user_id'],  
             (string) $_POST['group_id'],
             $fileName,
             $file['type'],
@@ -78,4 +95,119 @@ class PhotoController extends Controller
         header("Location: /photo/upload");
         exit;
     }
+
+    public function showPhotos()
+    {
+        $testUserId = "550e8400-e29b-41d4-a716-446655440000"; // ID de test
+
+        $sort = $_GET['sort'] ?? 'newest';
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $limit = 10; 
+        $offset = ($page - 1) * $limit;
+
+        $photos = $this->photoModel->getUserPhotos($testUserId, $sort, $limit, $offset);
+        $totalPhotos = $this->photoModel->countUserPhotos($testUserId);
+        $totalPages = ceil($totalPhotos / $limit);
+
+        require_once '../app/Views/photos.php';
+    }
+
+    public function deletePhoto()
+    {
+        session_start();
+
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour supprimer une photo.";
+            header("Location: /photos");
+            exit;
+        }
+
+        if (!isset($_POST['photo_id']) || empty($_POST['photo_id'])) {
+            $_SESSION['error'] = "Photo introuvable.";
+            header("Location: /photos");
+            exit;
+        }
+
+        $photoId = $_POST['photo_id'];
+        $userId = $_SESSION['user_id'];
+
+        $photo = $this->photoModel->getPhotoById($photoId);
+
+        if (!$photo || $photo['user_id'] !== $userId) {
+            $_SESSION['error'] = "Vous ne pouvez supprimer que vos propres photos.";
+            header("Location: /photos");
+            exit;
+        }
+
+        $filePath = __DIR__ . "/../../public/uploads/" . $photo['filename'];
+
+        if (file_exists($filePath)) {
+            unlink($filePath); 
+        }
+
+        $deleted = $this->photoModel->deletePhoto($photoId);
+
+        if ($deleted) {
+            $_SESSION['success'] = "Photo supprimée avec succès.";
+        } else {
+            $_SESSION['error'] = "Erreur lors de la suppression de la photo.";
+        }
+
+        header("Location: /photos");
+        exit;
+    }
+
+    public function generateShareLink()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour générer un lien de partage.";
+            header("Location: /photos");
+            exit;
+        }
+
+        if (!isset($_POST['photo_id']) || empty($_POST['photo_id'])) {
+            $_SESSION['error'] = "Photo introuvable.";
+            header("Location: /photos");
+            exit;
+        }
+
+        $photoId = $_POST['photo_id'];
+        $userId = $_SESSION['user_id'];
+
+        $photo = $this->photoModel->getPhotoById($photoId);
+
+        if (!$photo || $photo['user_id'] !== $userId) {
+            $_SESSION['error'] = "Vous ne pouvez partager que vos propres photos.";
+            header("Location: /photos");
+            exit;
+        }
+
+        $shareToken = bin2hex(random_bytes(16));
+
+        $this->photoModel->saveShareLink($photoId, $shareToken);
+
+        $_SESSION['success'] = "Lien de partage généré : " . $_ENV['APP_URL'] . "/photo/view?token=$shareToken";
+
+        header("Location: /photos");
+        exit;
+    }
+
+    public function viewPhoto()
+    {
+        if (!isset($_GET['token']) || empty($_GET['token'])) {
+            die("Lien invalide.");
+        }
+
+        $shareToken = $_GET['token'];
+
+        $photo = $this->photoModel->getPhotoByToken($shareToken);
+
+        if (!$photo) {
+            die("Photo introuvable ou lien expiré.");
+        }
+
+        require_once '../app/Views/view_photo.php';
+    }
+
+
 }
