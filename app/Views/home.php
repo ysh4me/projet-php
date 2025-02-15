@@ -5,118 +5,108 @@ if (session_status() == PHP_SESSION_NONE) {
 ?>
 
 <?php include __DIR__ . '/partials/head.php'; ?>
-
 <body>
     <?php include __DIR__ . '/partials/navbar.php'; ?>
 
+    <section class="how-it-works">
+        <div class="container">
+            <h2>Comment ça marche ?</h2>
+            <p>Découvrez comment Buddy Shotz facilite le partage et la gestion de vos souvenirs.</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Importez vos photos</h3>
+                    <p>Ajoutez facilement vos clichés de voyage pour les conserver en toute sécurité.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Invitez vos amis</h3>
+                    <p>Créez des albums et partagez vos souvenirs avec vos proches.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Revivez vos souvenirs</h3>
+                    <p>Accédez à votre galerie à tout moment, depuis n'importe quel appareil.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
     <section class="hero">
         <div class="container">
-        <div class="hero-image">
-        <div class="image-container">
-            <div class="hero-text">
-                <h2>Discover the world's Hidden Wonders</h2>
-                <p>Wonders</p>
-                <button class="btn">JOIN US</button>
-            </div>
-                </div>
-            </div>
+            <h1>Capturez et Partagez Vos Moments de Roadtrip</h1>
+            <p>Rejoignez la communauté Buddy Shotz et immortalisez vos voyages.</p>
+            <a href="/register" class="btn">Rejoignez-nous</a>
         </div>
     </section>
 
-    <section class="share">
+    <section class="intro">
         <div class="container">
-            <h2>Share Your Moment With Us</h2>
-            <div class="image-grid">
-                <div class="image-container">
-                    <div class="image" style="background-image: url('../images/1.jpg');"></div>
-                    <br>
-                    <p>India</p>
-                    <div class="actions">
-                            <button class="like">👍</button>
-                            <button class="dislike">👎</button>
-                            <span class="rating">⭐ 3.8</span>
-                        </div>
+            <h2>🌍 Pourquoi choisir <span>Buddy Shotz</span> ?</h2>
+            <p>Un espace unique pour stocker, organiser et partager vos souvenirs de voyage en toute simplicité.</p>
+            <div class="benefits">
+                <div class="benefit">
+                    <h3>📌 Une plateforme pensée pour vous</h3>
+                    <p>Créez des albums et partagez vos photos de voyage avec vos amis et votre famille.</p>
                 </div>
-                <div class="image-container">
-                    <div class="image" style="background-image: url('../images/2.jpg');"></div>
-                    <br>
-                    <p>Australie</p>
-                    <div class="actions">
-                            <button class="like">👍</button>
-                            <button class="dislike">👎</button>
-                            <span class="rating">⭐ 3.8</span>
-                        </div>
+                <div class="benefit">
+                    <h3>🔒 Sécurisez vos souvenirs</h3>
+                    <p>Vos photos restent privées, visibles uniquement par les personnes que vous choisissez.</p>
                 </div>
-                <div class="image-container">
-                    <div class="image" style="background-image: url('../images/3.jpg');"></div>
-                    <br>
-                    <p>Turkey</p>
-                    <div class="actions">
-                            <button class="like">👍</button>
-                            <button class="dislike">👎</button>
-                            <span class="rating">⭐ 3.8</span>
-                        </div>
-                </div>
-                <div class="image-container">
-                    <div class="image" style="background-image: url('../images/4.jpg');"></div>
-                    <br>
-                    <p>North America</p>
-                    <div class="actions">
-                            <button class="like">👍</button>
-                            <button class="dislike">👎</button>
-                            <span class="rating">⭐ 3.8</span>
-                        </div>
+                <div class="benefit">
+                    <h3>🚀 Accédez à vos souvenirs n’importe où</h3>
+                    <p>Disponible sur mobile, tablette et ordinateur. Votre galerie vous suit partout.</p>
                 </div>
             </div>
+            <a href="/register" class="btn">Commencer maintenant</a>
         </div>
     </section>
 
-
-    <section class="latest-stories">
-        <h2>Latest Stories</h2>
+    <section class="features">
         <div class="container">
-            <div class="small-image-grid left">
-                <div class="small-image-container">
-                    <img src="../images/6.jpg" alt="Small Image 1">
-                    <p>Description 1</p>
-                </div>
-                <div class="small-image-container">
-                    <img src="../images/5.jpg" alt="Small Image 2">
-                    <p>Description 2</p>
-                </div>
-                <div class="small-image-container">
-                    <img src="../images/5.jpg" alt="Small Image 3">
-                    <p>Description 3</p>
-                </div>
+            <div class="feature">
+                <h2>📸 Partagez vos photos</h2>
+                <p>Uploadez vos clichés de roadtrip et partagez-les avec vos amis.</p>
             </div>
-            <div class="featured-image">
-                <img src="../images/7.jpg" alt="Main Image">
+            <div class="feature">
+                <h2>🚀 Créez des groupes</h2>
+                <p>Invitez vos amis et créez un espace dédié à vos souvenirs.</p>
             </div>
-            <div class="small-image-grid right">
-                <div class="small-image-container">
-                    <img src="../images/6.jpg" alt="Small Image 4">
-                    <p>Description 4</p>
-                </div>
-                <div class="small-image-container">
-                    <img src="../images/5.jpg" alt="Small Image 5">
-                    <p>Description 5</p>
-                </div>
-                <div class="small-image-container">
-                    <img src="../images/5.jpg" alt="Small Image 6">
-                    <p>Description 6</p>
-                </div>
+            <div class="feature">
+                <h2>🔒 Protégez vos souvenirs</h2>
+                <p>Définissez qui peut voir vos photos grâce à des options de confidentialité avancées.</p>
             </div>
         </div>
     </section>
 
-
-    <section class="subscribe">
+    <section class="latest-uploads">
         <div class="container">
-            <h2>Get Your Travel Inspiration Straight To Your Inbox</h2>
-            <input type="text" placeholder="Enter your email">
-            <button class="btn">Get Started</button>
+            <h2>🌍 Dernières Photos Partagées</h2>
+            <div class="photo-grid">
+                <div class="photo" style="background-image: url('../images/1.jpg');"></div>
+                <div class="photo" style="background-image: url('../images/2.jpg');"></div>
+                <div class="photo" style="background-image: url('../images/3.jpg');"></div>
+                <div class="photo" style="background-image: url('../images/4.jpg');"></div>
+            </div>
         </div>
     </section>
 
+    <section class="testimonials">
+        <div class="container">
+            <h2>💬 Ce que nos utilisateurs disent</h2>
+            <div class="testimonial-list">
+                <div class="testimonial">
+                    <p>“Buddy Shotz est la meilleure plateforme pour garder mes souvenirs de voyage. J'adore partager mes photos avec mes amis !”</p>
+                    <span>- Sophie, Voyageuse passionnée</span>
+                </div>
+                <div class="testimonial">
+                    <p>“Facile à utiliser et très sécurisé, je recommande Buddy Shotz à tous les amateurs de roadtrips.”</p>
+                    <span>- Marc, Aventurier en van</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<?php include __DIR__ . '/partials/footer.php'; ?>
+    <?php include __DIR__ . '/partials/footer.php'; ?>
+</body>

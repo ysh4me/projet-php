@@ -129,72 +129,74 @@ class UserController extends Controller
 
     public function register()
     {
-
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            echo json_encode(["error" => "Méthode non autorisée."]);
+            $_SESSION['error']['global'] = "Méthode non autorisée.";
+            header("Location: /register");
             exit;
         }
-
+    
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            die(json_encode(["error" => "Échec de la validation CSRF."]));
-        }    
-
-        $inputData = json_decode(file_get_contents("php://input"), true) ?? $_POST;
-
-        $firstname = sanitizeInput($inputData['firstname'] ?? '');
-        $lastname = sanitizeInput($inputData['lastname'] ?? '');
-        $username = sanitizeInput($inputData['username'] ?? '');
-        $email = filter_var($inputData['email'] ?? '', FILTER_VALIDATE_EMAIL) ? sanitizeInput($inputData['email']) : '';
-        $password = $inputData['password'] ?? '';
-        $passwordConfirm = $inputData['passwordConfirm'] ?? '';
-        
-
-        if (empty($firstname) || empty($lastname) || empty($username) || empty($email) || empty($password) || empty($passwordConfirm)) {
-            echo json_encode(["error" => "Tous les champs sont obligatoires."]);
+            $_SESSION['error']['global'] = "Échec de la validation CSRF.";
+            header("Location: /register");
             exit;
         }
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo json_encode(["error" => "Adresse email invalide."]);
-            exit;
+    
+        $firstname = sanitizeInput($_POST['firstname'] ?? '');
+        $lastname = sanitizeInput($_POST['lastname'] ?? '');
+        $username = sanitizeInput($_POST['username'] ?? '');
+        $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL) ? sanitizeInput($_POST['email']) : '';
+        $password = $_POST['password'] ?? '';
+        $passwordConfirm = $_POST['passwordConfirm'] ?? '';
+    
+        if (empty($firstname)) {
+            $_SESSION['error']['firstname'] = "Le prénom est requis.";
         }
-
-        if ($this->userModel->emailExists($email)) {
-            echo json_encode(["error" => "Cet email est déjà utilisé."]);
-            exit;
+    
+        if (empty($lastname)) {
+            $_SESSION['error']['lastname'] = "Le nom est requis.";
         }
-
+    
+        if (empty($username)) {
+            $_SESSION['error']['username'] = "Le nom d'utilisateur est requis.";
+        }
+    
+        if (empty($email)) {
+            $_SESSION['error']['email'] = "L'email est requis.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error']['email'] = "Adresse email invalide.";
+        } elseif ($this->userModel->emailExists($email)) {
+            $_SESSION['error']['email'] = "Cet email est déjà utilisé.";
+        }
+    
         if ($this->userModel->usernameExists($username)) {
-            echo json_encode(["error" => "Ce nom d'utilisateur est déjà utilisé."]);
+            $_SESSION['error']['username'] = "Ce nom d'utilisateur est déjà utilisé.";
+        }
+    
+        if (empty($password)) {
+            $_SESSION['error']['password'] = "Le mot de passe est requis.";
+        }
+    
+        if (empty($passwordConfirm)) {
+            $_SESSION['error']['passwordConfirm'] = "La confirmation du mot de passe est requise.";
+        } elseif ($password !== $passwordConfirm) {
+            $_SESSION['error']['passwordConfirm'] = "Les mots de passe ne correspondent pas.";
+        }
+    
+        if (!empty($_SESSION['error'])) {
+            header("Location: /register");
             exit;
         }
-
-        if ($password !== $passwordConfirm) {
-            echo json_encode(["error" => "Les mots de passe ne correspondent pas."]);
-            exit;
-        }
-
+    
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         $userCreated = $this->userModel->createUser($firstname, $lastname, $username, $email, $hashedPassword);
-
+    
         if ($userCreated) {
-            $verificationToken = bin2hex(random_bytes(32));
-            $this->userModel->storeEmailVerificationToken($email, $verificationToken);
-        
-            $verificationLink = $_ENV['APP_URL'] . "/verify-email?token=" . urlencode($verificationToken);
-        
-            ob_start();
-            require __DIR__ . "/../Views/emails/verification_email.php";
-            $emailContent = ob_get_clean();
-        
-            $this->sendVerificationEmail($email, $emailContent);
-        
             $_SESSION['success'] = "Inscription réussie ! Un email de validation a été envoyé.";
-            header("Location: /login"); 
+            header("Location: /login");
             exit;
-        }    
-    }
+        }
+    }    
 
     public function verifyEmail()
     {
@@ -221,42 +223,49 @@ class UserController extends Controller
 
     public function login()
     {
-
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            echo json_encode(["error" => "Méthode non autorisée."]);
+            $_SESSION['error']['global'] = "Méthode non autorisée.";
+            header("Location: /login");
             exit;
-        }
-
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            die(json_encode(["error" => "Échec de la validation CSRF."]));
         }
     
-
-        $inputData = json_decode(file_get_contents("php://input"), true) ?? $_POST;
-
-        $email = filter_var($inputData['email'] ?? '', FILTER_VALIDATE_EMAIL) ? sanitizeInput($inputData['email']) : '';
-        $password = sanitizeInput($inputData['password'] ?? '');
-
-        if (empty($email) || empty($password)) {
-            echo json_encode(["error" => "Tous les champs sont obligatoires."]);
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['error']['global'] = "Échec de la validation CSRF.";
+            header("Location: /login");
             exit;
         }
-
+    
+        $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL) ? sanitizeInput($_POST['email']) : '';
+        $password = sanitizeInput($_POST['password'] ?? '');
+    
+        if (empty($email)) {
+            $_SESSION['error']['email'] = "L'email est requis.";
+        }
+    
+        if (empty($password)) {
+            $_SESSION['error']['password'] = "Le mot de passe est requis.";
+        }
+    
+        if (!empty($_SESSION['error'])) {
+            header("Location: /login");
+            exit;
+        }
+    
         $user = $this->userModel->getUserByEmail($email);
-
+    
         if (!$user || !password_verify($password, $user['password'])) {
-            echo json_encode(["error" => "Identifiants incorrects."]);
+            $_SESSION['error']['global'] = "Identifiants incorrects.";
+            header("Location: /login");
             exit;
         }
-
+    
         if (!$user['is_verified']) {
-            echo json_encode(["error" => "Veuillez valider votre email avant de vous connecter."]);
+            $_SESSION['error']['global'] = "Veuillez valider votre email avant de vous connecter.";
+            header("Location: /login");
             exit;
         }
-
-        $token = $this->userModel->generateJwtToken($user['id']);
-
+    
         $_SESSION['user'] = [
             'id' => $user['id'],
             'firstname' => $user['first_name'], 
@@ -264,11 +273,12 @@ class UserController extends Controller
             'username' => $user['username'],
             'email' => $user['email']
         ];
-                $_SESSION['token'] = $token;
+        $_SESSION['token'] = $this->userModel->generateJwtToken($user['id']);
     
         header("Location: /");
         exit;    
     }
+    
 
     public function logout()
     {
@@ -303,46 +313,55 @@ class UserController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            echo json_encode(["error" => "Méthode non autorisée."]);
+            $_SESSION['error']['global'] = "Méthode non autorisée.";
+            header("Location: /forgot-password");
             exit;
-        }
-
-        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            die(json_encode(["error" => "Échec de la validation CSRF."]));
         }
     
-
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $_SESSION['error']['global'] = "Échec de la validation CSRF.";
+            header("Location: /forgot-password");
+            exit;
+        }
+    
         $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL) ? sanitizeInput($_POST['email']) : '';
-
+    
         if (empty($email)) {
-            $_SESSION['error'] = "Veuillez entrer un email.";
+            $_SESSION['error']['email'] = "Veuillez entrer un email.";
             header("Location: /forgot-password");
             exit;
         }
-
+    
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error']['email'] = "Adresse email invalide.";
+            header("Location: /forgot-password");
+            exit;
+        }
+    
         $user = $this->userModel->getUserByEmail($email);
-
+    
         if (!$user) {
-            $_SESSION['error'] = "Aucun compte trouvé avec cet email.";
+            $_SESSION['error']['email'] = "Aucun compte trouvé avec cet email.";
             header("Location: /forgot-password");
             exit;
         }
-
-        $token = bin2hex(random_bytes(32));
-        $this->userModel->storePasswordResetToken($email, $token);
-
-        $resetLink = $_ENV['APP_URL'] . "/reset-password?token=" . urlencode($token);
-
+    
+        $resetToken = bin2hex(random_bytes(32));
+        $this->userModel->storePasswordResetToken($email, $resetToken);
+    
+        $resetLink = $_ENV['APP_URL'] . "/reset-password?token=" . urlencode($resetToken);
+    
         ob_start();
         require __DIR__ . "/../Views/emails/reset_password_email.php";
         $emailContent = ob_get_clean();
-
+    
         $this->sendEmail($email, "Réinitialisation du mot de passe", $emailContent);
-
+    
         $_SESSION['success'] = "Un email de réinitialisation a été envoyé.";
         header("Location: /forgot-password");
         exit;
     }
+    
 
     public function updatePassword()
     {
@@ -351,42 +370,59 @@ class UserController extends Controller
             echo json_encode(["error" => "Méthode non autorisée."]);
             exit;
         }
-
+    
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-            die(json_encode(["error" => "Échec de la validation CSRF."]));
+            $_SESSION['error']['global'] = "Échec de la validation CSRF.";
+            header("Location: /reset-password?token=" . urlencode($_POST['token']));
+            exit;
         }
     
-
         $token = sanitizeInput($_POST['token'] ?? '');
         $password = sanitizeInput($_POST['password'] ?? '');
         $passwordConfirm = sanitizeInput($_POST['passwordConfirm'] ?? '');
-        
-
-        if (empty($token) || empty($password) || empty($passwordConfirm)) {
-            $_SESSION['error'] = "Tous les champs sont obligatoires.";
+    
+        if (empty($token)) {
+            $_SESSION['error']['global'] = "Le lien de réinitialisation est invalide.";
+            header("Location: /forgot-password");
+            exit;
+        }
+    
+        if (empty($password)) {
+            $_SESSION['error']['password'] = "Le mot de passe est requis.";
+        }
+    
+        if (empty($passwordConfirm)) {
+            $_SESSION['error']['passwordConfirm'] = "Veuillez confirmer votre mot de passe.";
+        }
+    
+        if (!empty($_SESSION['error'])) {
             header("Location: /reset-password?token=" . urlencode($token));
             exit;
         }
-
+    
         if ($password !== $passwordConfirm) {
-            $_SESSION['error'] = "Les mots de passe ne correspondent pas.";
+            $_SESSION['error']['passwordConfirm'] = "Les mots de passe ne correspondent pas.";
             header("Location: /reset-password?token=" . urlencode($token));
             exit;
         }
-
-        if ($this->userModel->updatePassword($token, $password)) {
-            $_SESSION['success'] = "Mot de passe mis à jour. Vous pouvez vous connecter.";
+    
+        if (!$this->userModel->isResetTokenValid($token)) {
+            $_SESSION['error']['global'] = "Le lien est invalide ou expiré.";
+            header("Location: /forgot-password");
+            exit;
+        }
+    
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+    
+        if ($this->userModel->updatePassword($token, $hashedPassword)) {
+            $_SESSION['success'] = "Mot de passe mis à jour avec succès ! Vous pouvez maintenant vous connecter.";
             header("Location: /login");
             exit;
         } else {
-            $_SESSION['error'] = "Le lien est invalide ou expiré.";
-            header("Location: /forgot-password");
+            $_SESSION['error']['global'] = "Une erreur s'est produite lors de la mise à jour.";
+            header("Location: /reset-password?token=" . urlencode($token));
             exit;
         }
     }
 
-
-    
-    
-    
 }
