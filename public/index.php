@@ -4,7 +4,7 @@ use Dotenv\Dotenv;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$helpersPath = __DIR__ . '/../app/Core/helpers.php';
+$helpersPath = __DIR__ . '/../app/Core/Helpers.php';
 if (file_exists($helpersPath)) {
     require_once $helpersPath;
 } else {

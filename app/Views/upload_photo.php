@@ -3,7 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../app/Core/helpers.php';
+require_once __DIR__ . '/../Core/Helpers.php';
 ?>
 
 <?php include __DIR__ . '/partials/head.php'; ?>
@@ -26,11 +26,16 @@ require_once __DIR__ . '/../app/Core/helpers.php';
         <label for="photo">Sélectionnez une photo :</label>
         <input type="file" id="photo" name="photo" accept="image/jpeg, image/png, image/gif" required>
 
-        <label for="group_id">Sélectionnez un groupe :</label>
+        <label for="group_id">Groupe :</label>
         <select id="group_id" name="group_id" required>
-            <?php foreach ($groups as $group): ?>
-                <option value="<?= escape($group['id']) ?>"><?= escape($group['name']) ?></option>
-            <?php endforeach; ?>
+            <?php if (!empty($groups)): ?>
+                <option selected>Selectionner un groupe</option>
+                <?php foreach ($groups as $group): ?>
+                    <option value="<?= escape($group['id']) ?>"><?= escape($group['name']) ?></option>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <option disabled selected>Aucun groupe disponible</option>
+            <?php endif; ?>
         </select>
 
         <button type="submit">Uploader</button>

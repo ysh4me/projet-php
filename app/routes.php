@@ -31,30 +31,34 @@ $router->get('/forgot-password', function() {
 $router->post('/forgot-password', [UserController::class, 'forgotPassword']);
 $router->get('/reset-password', [UserController::class, 'resetPassword']);
 $router->post('/update-password', [UserController::class, 'updatePassword']);
-
+$router->post('/album/share', [GroupController::class, 'generateShareLink']);
+$router->get('/album/view/{token}', [GroupController::class, 'viewSharedAlbum']);
 
 
 // upload des photos
 $router->get('/photo/upload', function() {
     session_start();
-    $testUserId = "550e8400-e29b-41d4-a716-446655440000"; 
-    // if (!isset($_SESSION['user_id'])) {
-    //     $_SESSION['error'] = "Veuillez vous connecter.";
-    //     header("Location: /login");
-    //     exit;
-    // }
+
+    if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+        $_SESSION['error'] = "Veuillez vous connecter.";
+        header("Location: /login");
+        exit;
+    }
+    
 
     $photoModel = new \App\Models\PhotoModel();
-    // $groups = $photoModel->getUserGroups($_SESSION['user_id']);
-    $groups = $photoModel->getUserGroups($testUserId);
+    $groups = $photoModel->getUserGroups($_SESSION['user_id']);
 
     require_once '../app/Views/upload_photo.php';
 });
 
 $router->post('/photo/upload', [PhotoController::class, 'uploadPhoto']);
-$router->get('/groups', [GroupController::class, 'index']);
-$router->post('/group/create', [GroupController::class, 'createGroup']);
-$router->post('/group/delete', [GroupController::class, 'deleteGroup']);
+
+$router->get('/albums', [GroupController::class, 'index']);
+$router->post('/album/create', [GroupController::class, 'createGroup']);
+$router->post('/album/delete', [GroupController::class, 'deleteAlbum']);
+$router->post('/album/update', [GroupController::class, 'updateAlbum']);
+
 
 $router->get('/photos', [PhotoController::class, 'showPhotos']);
 

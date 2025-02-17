@@ -27,19 +27,27 @@ class PhotoModel
             ':mime_type' => $mimeType,
             ':size' => $size
         ]);
-    }    
-
-    // public function getUserGroups(int $userId): array
-    // {
-    //     $query = "SELECT g.id, g.name 
-    //               FROM group_members gm
-    //               JOIN `groups` g ON gm.group_id = g.id
-    //               WHERE gm.user_id = :user_id";
-    //     $stmt = $this->pdo->prepare($query);
-    //     $stmt->execute([':user_id' => $userId]);
-    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // }
+    }
     
+    public function getAlbumPhotos(string $albumId, int $limit = 4): array
+    {
+        $query = "SELECT filename FROM photos WHERE group_id = :album_id ORDER BY uploaded_at DESC LIMIT :limit";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindParam(':album_id', $albumId, PDO::PARAM_STR);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countPhotosInAlbum(string $albumId): int
+    {
+        $query = "SELECT COUNT(*) FROM photos WHERE group_id = :album_id";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([':album_id' => $albumId]);
+        return (int) $stmt->fetchColumn();
+    }
+
     public function getUserGroups(string $userId): array
     {
         $query = "SELECT g.id, g.name 

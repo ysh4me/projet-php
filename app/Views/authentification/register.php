@@ -3,7 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../../Core/helpers.php';
+require_once __DIR__ . '/../../Core/Helpers.php';
 ?>
 
 <?php include __DIR__ . '/../partials/head.php'; ?>

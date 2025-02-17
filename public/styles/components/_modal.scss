@@ -1,0 +1,257 @@
+@use "sass:color";
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow-y: auto;
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        width: 90%;
+        max-width: 40rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        position: relative;
+        text-align: center;
+        animation: fadeIn 0.3s ease-in-out;
+
+        .albums-header-modal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+
+            h1 {
+                font-weight: bold;
+                color: $dark-text;
+                margin-bottom: 0;
+            }
+
+            .close-modal {
+                background: none;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                transition: transform 0.2s ease-in-out;
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                    stroke: $dark-text;
+                }
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+            }
+        }
+
+        .modal-photos {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            grid-auto-rows: auto; 
+            align-items: start;
+        }
+        
+        .photo-card {
+            width: 100%;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+
+            img {
+                width: 100%;
+                height: auto; 
+                display: block;
+                border-radius: 5px;
+                object-fit: cover;
+            }
+
+            .delete-photo-btn {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                background: red;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background 0.3s ease-in-out;
+        
+                &:hover {
+                    background: darkred;
+                }
+            }
+        }
+
+        .modal-body {
+            padding: 1rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            button {
+                background: $primary-color;
+                color: white;
+                border: none;
+                padding: 0.8rem 1.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1rem;
+                font-weight: bold;
+                transition: background 0.3s ease-in-out;
+                margin-top: 1rem;
+                width: 5rem;
+                display: flex;
+                justify-content: center;
+
+                &:hover {
+                    background: color.adjust($primary-color, $lightness: -10%);
+                }
+            }
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            gap: 1rem;
+
+            button {
+                padding: 0.8rem 1.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 1rem;
+                font-weight: bold;
+                transition: background 0.3s ease-in-out;
+                border: none;
+            }
+
+            .btn-primary {
+                background-color: $primary-color;
+                color: white;
+                width: 5rem;
+
+                &:hover {
+                    background-color: color.adjust($primary-color, $lightness: -10%);
+                }
+            }
+
+            .btn-danger {
+                background-color: red;
+                color: white;
+                width: 5rem;
+
+                &:hover {
+                    background-color: darkred;
+                }
+            }
+
+            .btn-secondary {
+                background-color: #ddd;
+                color: black;
+                width: 5rem;
+
+                &:hover {
+                    background-color: #ccc;
+                }
+            }
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+
+            label {
+                text-align: left;
+                font-weight: bold;
+                font-size: 0.95rem;
+                width: 100%;
+            }
+
+            input {
+                padding: 10px;
+                font-size: 1rem;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                transition: border 0.2s ease-in-out;
+
+                &:focus {
+                    border: 1px solid $primary-color;
+                    outline: none;
+                }
+            }
+
+            .btn-primary {
+                background-color: $primary-color;
+                color: white;
+                border: none;
+                padding: 1rem 0;
+                font-size: 1rem;
+                cursor: pointer;
+                border-radius: 6px;
+                font-weight: bold;
+                transition: background 0.3s ease-in-out;
+                width: 10rem;
+
+                &:hover {
+                    background-color: color.adjust($primary-color, $lightness: -10%);
+                }
+            }
+        }
+    }
+}
+
+#albumModal {
+    .modal-content {
+        max-width: 80rem;
+    }
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@include responsive(mobile) {
+    .modal-content {
+        width: 95%;
+        max-width: 30rem;
+        padding: 1.5rem;
+    }
+}

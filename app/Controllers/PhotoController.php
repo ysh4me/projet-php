@@ -4,10 +4,12 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\PhotoModel;
+use App\Models\GroupModel;
 
 class PhotoController extends Controller
 {
     private PhotoModel $photoModel;
+    private GroupModel $groupModel;
 
     public function __construct()
     {
@@ -20,93 +22,88 @@ class PhotoController extends Controller
         }
     
         $this->photoModel = new PhotoModel();
+        $this->groupModel = new GroupModel();
     }
 
     public function uploadPhoto()
     {
+        header('Content-Type: application/json');
 
-        $testUserId = "550e8400-e29b-41d4-a716-446655440000";
-
-        if (!isset($_SESSION['user_id'])) {
-            $_SESSION['error'] = "Vous devez être connecté pour uploader une photo.";
-            header("Location: /login");
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            echo json_encode(["error" => "Vous devez être connecté pour uploader des photos."]);
             exit;
         }
 
         if (!isset($_POST['group_id']) || empty($_POST['group_id'])) {
-            $_SESSION['error'] = "Veuillez sélectionner un groupe.";
-            header("Location: /photo/upload");
+            echo json_encode(["error" => "Veuillez sélectionner un album."]);
             exit;
         }
 
-        if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
-            $_SESSION['error'] = "Veuillez sélectionner une image valide.";
-            header("Location: /photo/upload");
+        if (!isset($_FILES['photos']) || count($_FILES['photos']['name']) === 0) {
+            echo json_encode(["error" => "Aucune photo sélectionnée."]);
             exit;
         }
 
-        $file = $_FILES['photo'];
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        $maxSize = 5 * 1024 * 1024; // 5 Mo
-
-        if (!in_array($file['type'], $allowedTypes)) {
-            $_SESSION['error'] = "Seuls les fichiers JPG, PNG et GIF sont autorisés.";
-            header("Location: /photo/upload");
-            exit;
-        }
-
-        if ($file['size'] > $maxSize) {
-            $_SESSION['error'] = "La taille maximale est de 5 Mo.";
-            header("Location: /photo/upload");
-            exit;
-        }
-
-        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $fileName = uniqid('photo_', true) . '.' . $fileExtension;
-
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic'];
+        $maxSize = 5 * 1024 * 1024; 
         $uploadDir = __DIR__ . '/../../public/uploads/';
+        
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 
-        $filePath = $uploadDir . $fileName;
-        if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-            $_SESSION['error'] = "Erreur lors du téléchargement du fichier.";
-            header("Location: /photo/upload");
-            exit;
+        $uploadedPhotos = [];
+        foreach ($_FILES['photos']['name'] as $key => $name) {
+            $fileType = $_FILES['photos']['type'][$key];
+            $fileSize = $_FILES['photos']['size'][$key];
+            $tmpName = $_FILES['photos']['tmp_name'][$key];
+            $error = $_FILES['photos']['error'][$key];
+
+            if ($error !== UPLOAD_ERR_OK) {
+                continue; 
+            }
+
+            if (!in_array($fileType, $allowedTypes)) {
+                continue; 
+            }
+
+            if ($fileSize > $maxSize) {
+                continue;
+            }
+
+            $fileExtension = pathinfo($name, PATHINFO_EXTENSION);
+            $fileName = uniqid('photo_', true) . '.' . $fileExtension;
+            $filePath = $uploadDir . $fileName;
+
+            if (move_uploaded_file($tmpName, $filePath)) {
+                $this->photoModel->savePhoto($_SESSION['user']['id'], $_POST['group_id'], $fileName, $fileType, $fileSize);
+                $uploadedPhotos[] = $fileName;
+            }
         }
 
-        $photoModel = new PhotoModel();
-        $saved = $photoModel->savePhoto(
-            $testUserId,
-                        // (string) $_SESSION['user_id'],  
-            (string) $_POST['group_id'],
-            $fileName,
-            $file['type'],
-            $file['size']
-        );
-
-        if ($saved) {
-            $_SESSION['success'] = "Votre photo a bien été uploadée.";
+        if (!empty($uploadedPhotos)) {
+            echo json_encode([
+                "success" => "Photos uploadées avec succès.",
+                "photos" => $uploadedPhotos
+            ]);
         } else {
-            $_SESSION['error'] = "Erreur lors de l'enregistrement en base de données.";
+            echo json_encode(["error" => "Aucune photo n'a été uploadée."]);
         }
 
-        header("Location: /photo/upload");
         exit;
     }
 
     public function showPhotos()
     {
-        $testUserId = "550e8400-e29b-41d4-a716-446655440000"; // ID de test
+        $userId = $_SESSION['user']['id'] ?? null;
 
         $sort = $_GET['sort'] ?? 'newest';
         $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         $limit = 10; 
         $offset = ($page - 1) * $limit;
 
-        $photos = $this->photoModel->getUserPhotos($testUserId, $sort, $limit, $offset);
-        $totalPhotos = $this->photoModel->countUserPhotos($testUserId);
+        $photos = $this->photoModel->getUserPhotos($userId, $sort, $limit, $offset);
+        $totalPhotos = $this->photoModel->countUserPhotos($userId);
         $totalPages = ceil($totalPhotos / $limit);
 
         require_once '../app/Views/photos.php';
@@ -114,48 +111,46 @@ class PhotoController extends Controller
 
     public function deletePhoto()
     {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $_SESSION['error'] = "Vous devez être connecté pour supprimer une photo.";
-            header("Location: /photos");
+        header('Content-Type: application/json');
+    
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            echo json_encode(["error" => "Vous devez être connecté pour supprimer une photo."]);
             exit;
         }
-
-        if (!isset($_POST['photo_id']) || empty($_POST['photo_id'])) {
-            $_SESSION['error'] = "Photo introuvable.";
-            header("Location: /photos");
+    
+        $userId = $_SESSION['user']['id'];
+        $data = json_decode(file_get_contents("php://input"), true);
+    
+        if (!isset($data['photo_id']) || empty($data['photo_id'])) {
+            echo json_encode(["error" => "Photo introuvable."]);
             exit;
         }
-
-        $photoId = $_POST['photo_id'];
-        $userId = $_SESSION['user_id'];
-
+    
+        $photoId = $data['photo_id'];
         $photo = $this->photoModel->getPhotoById($photoId);
-
+    
         if (!$photo || $photo['user_id'] !== $userId) {
-            $_SESSION['error'] = "Vous ne pouvez supprimer que vos propres photos.";
-            header("Location: /photos");
+            echo json_encode(["error" => "Vous ne pouvez supprimer que vos propres photos."]);
             exit;
         }
-
+    
         $filePath = __DIR__ . "/../../public/uploads/" . $photo['filename'];
-
+    
         if (file_exists($filePath)) {
-            unlink($filePath); 
+            unlink($filePath);
         }
-
+    
         $deleted = $this->photoModel->deletePhoto($photoId);
-
+    
         if ($deleted) {
-            $_SESSION['success'] = "Photo supprimée avec succès.";
+            echo json_encode(["success" => "Photo supprimée avec succès."]);
         } else {
-            $_SESSION['error'] = "Erreur lors de la suppression de la photo.";
+            echo json_encode(["error" => "Erreur lors de la suppression de la photo."]);
         }
-
-        header("Location: /photos");
+    
         exit;
     }
+    
 
     public function generateShareLink()
     {

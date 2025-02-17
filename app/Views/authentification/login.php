@@ -3,11 +3,10 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../../Core/helpers.php';
+require_once __DIR__ . '/../../Core/Helpers.php';
 ?>
 
 <?php include __DIR__ . '/../partials/head.php'; ?>
-
 <?php include __DIR__ . '/../partials/navbar.php'; ?>
 
 <div class="auth-container">
@@ -18,24 +17,21 @@ require_once __DIR__ . '/../../Core/helpers.php';
             <div class="error-message">
                 <p><?= escape($_SESSION['error']['global']) ?></p>
             </div>
-            <?php unset($_SESSION['error']['global']); ?>
         <?php endif; ?>
 
         <form action="/login" method="POST">
             <input type="hidden" name="csrf_token" value="<?= escape($_SESSION['csrf_token'] ?? '') ?>">
 
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="<?= isset($_POST['email']) ? escape($_POST['email']) : '' ?>" required>
+            <input type="email" id="email" name="email" value="<?= isset($_SESSION['old_input']['email']) ? escape($_SESSION['old_input']['email']) : '' ?>" required>
             <?php if (!empty($_SESSION['error']['email'])): ?>
                 <p class="error-text"><?= escape($_SESSION['error']['email']) ?></p>
-                <?php unset($_SESSION['error']['email']); ?>
             <?php endif; ?>
 
             <label for="password">Mot de passe</label>
             <input type="password" id="password" name="password" required>
             <?php if (!empty($_SESSION['error']['password'])): ?>
                 <p class="error-text"><?= escape($_SESSION['error']['password']) ?></p>
-                <?php unset($_SESSION['error']['password']); ?>
             <?php endif; ?>
 
             <button type="submit">Se connecter</button>
@@ -45,6 +41,9 @@ require_once __DIR__ . '/../../Core/helpers.php';
     </div>
 </div>
 
-
+<?php 
+    unset($_SESSION['error']); 
+    unset($_SESSION['old_input']);
+?>
 
 <?php include __DIR__ . '/../partials/footer.php'; ?>

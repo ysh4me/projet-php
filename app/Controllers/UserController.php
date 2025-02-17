@@ -223,49 +223,62 @@ class UserController extends Controller
 
     public function login()
     {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
             $_SESSION['error']['global'] = "Méthode non autorisée.";
+            session_write_close(); 
             header("Location: /login");
             exit;
         }
-    
+
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             $_SESSION['error']['global'] = "Échec de la validation CSRF.";
+            session_write_close();
             header("Location: /login");
             exit;
         }
-    
+
         $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL) ? sanitizeInput($_POST['email']) : '';
         $password = sanitizeInput($_POST['password'] ?? '');
-    
+
         if (empty($email)) {
             $_SESSION['error']['email'] = "L'email est requis.";
+        } else {
+            $_SESSION['old_input']['email'] = $_POST['email'];
         }
-    
+        
+
         if (empty($password)) {
             $_SESSION['error']['password'] = "Le mot de passe est requis.";
         }
-    
+
         if (!empty($_SESSION['error'])) {
+            session_write_close();
             header("Location: /login");
             exit;
         }
-    
+
         $user = $this->userModel->getUserByEmail($email);
-    
+
         if (!$user || !password_verify($password, $user['password'])) {
             $_SESSION['error']['global'] = "Identifiants incorrects.";
+            session_write_close();
             header("Location: /login");
             exit;
         }
-    
+
         if (!$user['is_verified']) {
             $_SESSION['error']['global'] = "Veuillez valider votre email avant de vous connecter.";
+            session_write_close();
             header("Location: /login");
             exit;
         }
-    
+
+        $_SESSION['user_id'] = $user['id']; 
         $_SESSION['user'] = [
             'id' => $user['id'],
             'firstname' => $user['first_name'], 
@@ -274,8 +287,9 @@ class UserController extends Controller
             'email' => $user['email']
         ];
         $_SESSION['token'] = $this->userModel->generateJwtToken($user['id']);
-    
-        header("Location: /");
+
+        session_write_close();
+        header("Location: /albums");
         exit;    
     }
     

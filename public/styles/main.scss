@@ -9,6 +9,7 @@
 @use 'components/buttons';
 @use 'components/forms';
 @use 'components/cards';
+@use 'components/modal';
 
 @use 'layout/navbar' as *;
 @use 'layout/footer';
@@ -19,6 +20,7 @@
 @use 'pages/register';
 @use 'pages/forgot_password';
 @use 'pages/reset_password';
+@use 'pages/albums';
 
 
 // _reset.scss (Optional)
