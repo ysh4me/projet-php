@@ -1,0 +1,92 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+@use "sass:color";
+
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    @include box-shadow(0.12);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    text-align: center;
+    position: relative;
+
+    &:hover {
+        transform: scale(1.05);
+        @include box-shadow(0.15);
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: color.adjust($primary-color, $lightness: -10%);
+    }
+
+    p {
+        font-size: 1rem;
+        color: $dark-text;
+    }
+}
+
+
+.card-default {
+    background: white;
+}
+
+.card-primary {
+    background: color.adjust($primary-color, $lightness: 42%);
+    h3 {
+        color: color.adjust($primary-color, $lightness: -10%);
+    }
+}
+
+.card-bordered {
+    border: 2px solid $primary-color;
+}
+
+.card-shadow {
+    @include box-shadow(0.2);
+}
+
+.card-featured {
+    background: linear-gradient(
+        to right, 
+        color.adjust($primary-color, $lightness: 40%), 
+        color.adjust($secondary-color, $lightness: 40%)
+    );
+    color: $dark-text;
+
+    h3 {
+        color: color.adjust($primary-color, $lightness: -15%);
+    }
+}
+
+.card-rounded {
+    border-radius: 25px;
+}
+
+.card-with-image {
+    overflow: hidden;
+    padding: 0;
+
+    .card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+}
+
+@include responsive(mobile) {
+    .card {
+        padding: 1.5rem;
+    }
+
+    .card-with-image .card-image {
+        height: 150px;
+    }
+}

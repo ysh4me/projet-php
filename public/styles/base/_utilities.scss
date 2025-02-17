@@ -1,0 +1,194 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    @include flex-center();
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-around {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.font-light {
+    font-weight: 300;
+}
+
+.font-normal {
+    font-weight: 400;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.margin-auto {
+    margin: auto;
+}
+
+.margin-top {
+    margin-top: 2rem;
+}
+
+.margin-bottom {
+    margin-bottom: 2rem;
+}
+
+.margin-left {
+    margin-left: 2rem;
+}
+
+.margin-right {
+    margin-right: 2rem;
+}
+
+.padding-small {
+    padding: 0.5rem;
+}
+
+.padding-medium {
+    padding: 1rem;
+}
+
+.padding-large {
+    padding: 2rem;
+}
+
+.radius-small {
+    border-radius: 5px;
+}
+
+.radius-medium {
+    border-radius: 10px;
+}
+
+.radius-large {
+    border-radius: 20px;
+}
+
+.shadow-small {
+    @include box-shadow(0.1);
+}
+
+.shadow-medium {
+    @include box-shadow(0.2);
+}
+
+.shadow-large {
+    @include box-shadow(0.3);
+}
+
+.full-width {
+    width: 100%;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.half-width {
+    width: 50%;
+}
+
+.half-height {
+    height: 50%;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.overflow-scroll {
+    overflow: scroll;
+}
+
+.bg-primary {
+    background: $primary-color;
+    color: white;
+}
+
+.bg-secondary {
+    background: $secondary-color;
+    color: white;
+}
+
+.bg-light {
+    background: $light-bg;
+}
+
+.bg-dark {
+    background: $dark-text;
+    color: white;
+}
+
+.hover-scale {
+    transition: transform 0.3s ease-in-out;
+    
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+.hover-shadow {
+    transition: box-shadow 0.3s ease-in-out;
+    
+    &:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@media (max-width: 1024px) {
+    .hide-tablet {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none;
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "projet-php",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "sass public/styles/main.scss public/styles/style.css --style compressed",
+    "watch-css": "sass --watch public/styles/main.scss:public/styles/style.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-perso:ysh4me/projet-php.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "sass": "^1.85.0"
+  }
+}

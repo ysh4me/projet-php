@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../Core/helpers.php';
 ?>
 
 <?php include __DIR__ . '/../partials/head.php'; ?>
+<?php include __DIR__ . '/../partials/navbar.php'; ?>
 
 <div class="container">
     <div class="auth-page">
