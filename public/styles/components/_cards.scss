@@ -24,7 +24,7 @@
 
     p {
         font-size: 1rem;
-        color: $dark-text;
+        color: $text-primary;
     }
 }
 
@@ -54,7 +54,7 @@
         color.adjust($primary-color, $lightness: 40%), 
         color.adjust($secondary-color, $lightness: 40%)
     );
-    color: $dark-text;
+    color: $text-primary;
 
     h3 {
         color: color.adjust($primary-color, $lightness: -15%);

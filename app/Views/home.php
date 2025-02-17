@@ -55,7 +55,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <p>Vos photos restent privées, visibles uniquement par les personnes que vous choisissez.</p>
                 </div>
                 <div class="benefit">
-                    <h3>🚀 Accédez à vos souvenirs n’importe où</h3>
+                    <h3>🚀 Accédez à vos souvenirs n'importe où</h3>
                     <p>Disponible sur mobile, tablette et ordinateur. Votre galerie vous suit partout.</p>
                 </div>
             </div>
@@ -82,13 +82,24 @@ if (session_status() == PHP_SESSION_NONE) {
 
     <section class="latest-uploads">
         <div class="container">
-            <h2>🌍 Dernières Photos Partagées</h2>
+            <div class="section-header">
+                <h2>🌍 Dernières Photos Partagées</h2>
+                <?php if (isset($_SESSION['user'])): ?>
+                    <a href="/photos" class="btn btn-primary">Voir toutes les photos</a>
+                <?php endif; ?>
+            </div>
             <div class="photo-grid">
                 <div class="photo" style="background-image: url('../images/1.jpg');"></div>
                 <div class="photo" style="background-image: url('../images/2.jpg');"></div>
                 <div class="photo" style="background-image: url('../images/3.jpg');"></div>
                 <div class="photo" style="background-image: url('../images/4.jpg');"></div>
             </div>
+            <?php if (!isset($_SESSION['user'])): ?>
+                <div class="cta-container">
+                    <p>Connectez-vous pour voir plus de photos et partager les vôtres !</p>
+                    <a href="/login" class="btn btn-primary">Se connecter</a>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -97,11 +108,11 @@ if (session_status() == PHP_SESSION_NONE) {
             <h2>💬 Ce que nos utilisateurs disent</h2>
             <div class="testimonial-list">
                 <div class="testimonial">
-                    <p>“Buddy Shotz est la meilleure plateforme pour garder mes souvenirs de voyage. J'adore partager mes photos avec mes amis !”</p>
+                    <p>"Buddy Shotz est la meilleure plateforme pour garder mes souvenirs de voyage. J'adore partager mes photos avec mes amis !"</p>
                     <span>- Sophie, Voyageuse passionnée</span>
                 </div>
                 <div class="testimonial">
-                    <p>“Facile à utiliser et très sécurisé, je recommande Buddy Shotz à tous les amateurs de roadtrips.”</p>
+                    <p>"Facile à utiliser et très sécurisé, je recommande Buddy Shotz à tous les amateurs de roadtrips."</p>
                     <span>- Marc, Aventurier en van</span>
                 </div>
             </div>

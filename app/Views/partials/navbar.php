@@ -12,6 +12,8 @@
         <ul class="nav-links">
             <li><a href="/">Accueil</a></li>
             <?php if (!empty($_SESSION['user']) && isset($_SESSION['user']['firstname'])): ?>
+                <li><a href="/photos">Galerie</a></li>
+                <li><a href="/groups">Groupes</a></li>
                 <li><a href="/logout">Déconnexion</a></li>
             <?php else: ?>
                 <li><a href="/login">Connexion</a></li>
@@ -30,6 +32,8 @@
             <ul>
                 <li><a href="/">Accueil</a></li>
                 <?php if (!empty($_SESSION['user']) && isset($_SESSION['user']['firstname'])): ?>
+                    <li><a href="/photos">Galerie</a></li>
+                    <li><a href="/groups">Groupes</a></li>
                     <li><a href="/logout">Déconnexion</a></li>
                 <?php else: ?>
                     <li><a href="/login">Connexion</a></li>

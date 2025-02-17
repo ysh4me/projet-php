@@ -24,10 +24,7 @@ class PhotoController extends Controller
 
     public function uploadPhoto()
     {
-
-        $testUserId = "550e8400-e29b-41d4-a716-446655440000";
-
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
             $_SESSION['error'] = "Vous devez être connecté pour uploader une photo.";
             header("Location: /login");
             exit;
@@ -35,13 +32,13 @@ class PhotoController extends Controller
 
         if (!isset($_POST['group_id']) || empty($_POST['group_id'])) {
             $_SESSION['error'] = "Veuillez sélectionner un groupe.";
-            header("Location: /photo/upload");
+            header("Location: /upload-photo");
             exit;
         }
 
         if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
             $_SESSION['error'] = "Veuillez sélectionner une image valide.";
-            header("Location: /photo/upload");
+            header("Location: /upload-photo");
             exit;
         }
 
@@ -51,13 +48,13 @@ class PhotoController extends Controller
 
         if (!in_array($file['type'], $allowedTypes)) {
             $_SESSION['error'] = "Seuls les fichiers JPG, PNG et GIF sont autorisés.";
-            header("Location: /photo/upload");
+            header("Location: /upload-photo");
             exit;
         }
 
         if ($file['size'] > $maxSize) {
             $_SESSION['error'] = "La taille maximale est de 5 Mo.";
-            header("Location: /photo/upload");
+            header("Location: /upload-photo");
             exit;
         }
 
@@ -72,15 +69,13 @@ class PhotoController extends Controller
         $filePath = $uploadDir . $fileName;
         if (!move_uploaded_file($file['tmp_name'], $filePath)) {
             $_SESSION['error'] = "Erreur lors du téléchargement du fichier.";
-            header("Location: /photo/upload");
+            header("Location: /upload-photo");
             exit;
         }
 
-        $photoModel = new PhotoModel();
-        $saved = $photoModel->savePhoto(
-            $testUserId,
-                        // (string) $_SESSION['user_id'],  
-            (string) $_POST['group_id'],
+        $saved = $this->photoModel->savePhoto(
+            $_SESSION['user']['id'],
+            $_POST['group_id'],
             $fileName,
             $file['type'],
             $file['size']
@@ -88,25 +83,29 @@ class PhotoController extends Controller
 
         if ($saved) {
             $_SESSION['success'] = "Votre photo a bien été uploadée.";
+            header("Location: /photos");
         } else {
             $_SESSION['error'] = "Erreur lors de l'enregistrement en base de données.";
+            header("Location: /upload-photo");
         }
-
-        header("Location: /photo/upload");
         exit;
     }
 
     public function showPhotos()
     {
-        $testUserId = "550e8400-e29b-41d4-a716-446655440000"; // ID de test
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour voir vos photos.";
+            header("Location: /login");
+            exit;
+        }
 
         $sort = $_GET['sort'] ?? 'newest';
         $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         $limit = 10; 
         $offset = ($page - 1) * $limit;
 
-        $photos = $this->photoModel->getUserPhotos($testUserId, $sort, $limit, $offset);
-        $totalPhotos = $this->photoModel->countUserPhotos($testUserId);
+        $photos = $this->photoModel->getUserPhotos($_SESSION['user']['id'], $sort, $limit, $offset);
+        $totalPhotos = $this->photoModel->countUserPhotos($_SESSION['user']['id']);
         $totalPages = ceil($totalPhotos / $limit);
 
         require_once '../app/Views/photos.php';
@@ -114,11 +113,9 @@ class PhotoController extends Controller
 
     public function deletePhoto()
     {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
             $_SESSION['error'] = "Vous devez être connecté pour supprimer une photo.";
-            header("Location: /photos");
+            header("Location: /login");
             exit;
         }
 
@@ -129,7 +126,7 @@ class PhotoController extends Controller
         }
 
         $photoId = $_POST['photo_id'];
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['user']['id'];
 
         $photo = $this->photoModel->getPhotoById($photoId);
 
@@ -159,9 +156,9 @@ class PhotoController extends Controller
 
     public function generateShareLink()
     {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
             $_SESSION['error'] = "Vous devez être connecté pour générer un lien de partage.";
-            header("Location: /photos");
+            header("Location: /login");
             exit;
         }
 
@@ -172,7 +169,7 @@ class PhotoController extends Controller
         }
 
         $photoId = $_POST['photo_id'];
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['user']['id'];
 
         $photo = $this->photoModel->getPhotoById($photoId);
 
@@ -208,6 +205,4 @@ class PhotoController extends Controller
 
         require_once '../app/Views/view_photo.php';
     }
-
-
 }

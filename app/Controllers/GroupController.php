@@ -24,14 +24,24 @@ class GroupController extends Controller
 
     public function index()
     {
-        $_SESSION['user_id'] = "550e8400-e29b-41d4-a716-446655440000"; 
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour accéder à cette page.";
+            header("Location: /login");
+            exit;
+        }
 
-        $groups = $this->groupModel->getUserGroups($_SESSION['user_id']);
+        $groups = $this->groupModel->getUserGroups($_SESSION['user']['id']);
         require_once '../app/Views/groups.php';
     }
 
     public function createGroup()
     {        
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour créer un groupe.";
+            header("Location: /login");
+            exit;
+        }
+
         if (!isset($_POST['group_name']) || empty(trim($_POST['group_name']))) {
             $_SESSION['error'] = "Le nom du groupe est requis.";
             header("Location: /groups");
@@ -39,7 +49,7 @@ class GroupController extends Controller
         }
 
         $groupName = trim($_POST['group_name']);
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['user']['id'];
 
         $groupId = $this->groupModel->createGroup($groupName, $userId);
 
@@ -55,6 +65,12 @@ class GroupController extends Controller
 
     public function deleteGroup()
     {
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour supprimer un groupe.";
+            header("Location: /login");
+            exit;
+        }
+
         if (!isset($_POST['group_id'])) {
             $_SESSION['error'] = "Groupe introuvable.";
             header("Location: /groups");
@@ -62,7 +78,7 @@ class GroupController extends Controller
         }
 
         $groupId = $_POST['group_id'];
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['user']['id'];
 
         if ($this->groupModel->deleteGroup($groupId, $userId)) {
             $_SESSION['success'] = "Groupe supprimé avec succès.";
