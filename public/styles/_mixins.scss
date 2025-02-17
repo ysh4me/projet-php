@@ -1,0 +1,63 @@
+@use "variables" as *; 
+@use "sass:color";
+
+
+@mixin responsive($breakpoint) {
+    @if $breakpoint == mobile {
+        @media (max-width: 768px) { @content; }
+    }
+    @else if $breakpoint == tablet {
+        @media (max-width: 1024px) { @content; }
+    }
+    @else if $breakpoint == desktop {
+        @media (max-width: 1440px) { @content; }
+    }
+}
+
+@mixin flex-center($direction: row, $justify: center, $align: center) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+@mixin button-style($bg-color, $text-color: white) {
+    background: $bg-color;
+    color: $text-color;
+    padding: 0.8rem 1.6rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+    cursor: pointer;
+    border: none;
+
+    &:hover {
+        background: color.adjust($bg-color, $lightness: -10%);
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+@mixin text-ellipsis($width) {
+    max-width: $width;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@mixin box-shadow($intensity: 0.2) {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, $intensity);
+}
+
+@mixin dark-mode {
+    @media (prefers-color-scheme: dark) {
+        @content;
+    }
+}
+

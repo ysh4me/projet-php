@@ -1,0 +1,233 @@
+@use "sass:color"; 
+@use "../variables" as *;
+@use "../mixins" as *;
+@use "../components/buttons" as *;
+@use "../components/cards" as *;
+
+.hero {
+    background: linear-gradient(to right, $primary-color, $secondary-color);
+    color: white;
+    padding: 5rem;
+    text-align: center;
+
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn {
+        @extend .btn-primary;
+        width: 15rem;
+    }
+}
+
+.how-it-works {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 10px;
+
+    h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: $primary-color;
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 1.2rem;
+        color: color.adjust($dark-text, $lightness: 10%);
+        margin-bottom: 3rem;
+        max-width: 700px;
+        margin: 0 auto;
+        margin-bottom: 1rem;
+    }
+
+    .steps {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        text-align: left;
+
+        .step {
+            @extend .card;
+            text-align: center;
+
+            .step-number {
+                font-size: 2rem;
+                font-weight: bold;
+                color: white;
+                background: $primary-color;
+                width: 50px;
+                height: 50px;
+                line-height: 50px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+            }
+        }
+    }
+}
+
+.intro {
+    padding: 2rem;
+    text-align: center;
+    background: color.adjust($primary-color, $lightness: 42%); 
+    border-radius: 10px;
+
+    h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: $dark-text;
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 1.2rem;
+        color: color.adjust($dark-text, $lightness: 10%);
+        margin-bottom: 2rem;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .benefits {
+        display: flex;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-top: 2rem;
+
+        .benefit {
+            @extend .card;
+        }
+    }
+
+    .btn {
+        @extend .btn-primary;
+        margin-top: 2rem;
+        width: 20rem;
+    }
+}
+
+.features {
+    padding: 4rem;
+    text-align: center;
+    background: #f8f9fa;
+
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .feature {
+        @extend .card;
+    }
+}
+
+.latest-uploads {
+    text-align: center;
+    padding: 5rem 2rem;
+    border-radius: 10px;
+
+    h2 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        color: $primary-color;
+        font-weight: bold;
+    }
+
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        justify-content: center;
+    }
+
+    .photo {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 15px;
+        @include box-shadow(0.12);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+
+        &:hover {
+            transform: scale(1.05);
+            @include box-shadow(0.15);
+        }
+    }
+}
+
+.testimonials {
+    background: linear-gradient(to right, $primary-color, $secondary-color);
+    color: white;
+    padding: 4rem;
+    text-align: center;
+
+    h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+    }
+
+    .testimonial-list {
+        display: flex;
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+        scroll-behavior: smooth;
+        position: relative;
+
+        .testimonial {
+            flex: 0 0 100%;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 10px;
+            transition: 0.3s ease-in-out;
+            
+            p {
+                font-size: 1.2rem;
+                font-style: italic;
+                margin-bottom: 1rem;
+            }
+
+            span {
+                font-size: 1rem;
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+@include responsive(tablet) {
+    .how-it-works .steps,
+    .intro .benefits,
+    .features .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .features .feature {
+        max-width: 90%;
+    }
+}
+
+@include responsive(mobile) {
+    .hero {
+        padding: 3rem;
+    }
+
+    .latest-uploads .photo {
+        height: 150px;
+    }
+}

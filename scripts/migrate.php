@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/Core/Helpers.php';
 
 use App\Core\DatabaseSeeder;
 use Dotenv\Dotenv;
