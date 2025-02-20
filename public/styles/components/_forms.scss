@@ -11,7 +11,7 @@ label {
     font-weight: bold;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
-    color: color.adjust($dark-text, $lightness: -10%);
+    color: color.adjust($text-primary, $lightness: -10%);
 }
 
 input,
@@ -89,7 +89,6 @@ button,
     margin-top: 0.3rem;
     text-align: center;
 }
-
 
 @include responsive(mobile) {
     .form-container {

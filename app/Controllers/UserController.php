@@ -465,5 +465,4 @@ class UserController extends Controller
             exit;
         }
     }
-
 }

@@ -48,7 +48,6 @@ $router->get('/photo/upload', function() {
 
     require_once '../app/Views/upload_photo.php';
 });
-
 $router->post('/photo/upload', [PhotoController::class, 'uploadPhoto']);
 
 $router->get('/albums', [GroupController::class, 'index']);
@@ -69,5 +68,10 @@ $router->get('/photos', [PhotoController::class, 'showPhotos']);
 $router->post('/photo/delete', [PhotoController::class, 'deletePhoto']);
 $router->post('/photo/share', [PhotoController::class, 'generateShareLink']);
 $router->get('/photo/view', [PhotoController::class, 'viewPhoto']);
+
+// Groupes
+$router->get('/groups', [GroupController::class, 'index']);
+$router->post('/group/create', [GroupController::class, 'createGroup']);
+$router->post('/group/delete', [GroupController::class, 'deleteGroup']);
 
 return $router;
