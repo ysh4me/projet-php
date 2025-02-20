@@ -32,12 +32,39 @@ $router->post('/forgot-password', [UserController::class, 'forgotPassword']);
 $router->get('/reset-password', [UserController::class, 'resetPassword']);
 $router->post('/update-password', [UserController::class, 'updatePassword']);
 
-// Photos
-$router->get('/photos', [PhotoController::class, 'showPhotos']);
-$router->get('/upload-photo', function() {
+// upload des photos
+$router->get('/photo/upload', function() {
+    session_start();
+
+    if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+        $_SESSION['error'] = "Veuillez vous connecter.";
+        header("Location: /login");
+        exit;
+    }
+    
+
+    $photoModel = new \App\Models\PhotoModel();
+    $groups = $photoModel->getUserGroups($_SESSION['user_id']);
+
     require_once '../app/Views/upload_photo.php';
 });
 $router->post('/photo/upload', [PhotoController::class, 'uploadPhoto']);
+
+$router->get('/albums', [GroupController::class, 'index']);
+$router->post('/album/create', [GroupController::class, 'createGroup']);
+$router->post('/album/delete', [GroupController::class, 'deleteAlbum']);
+$router->post('/album/update', [GroupController::class, 'updateAlbum']);
+$router->post('/album/update-permission', [GroupController::class, 'updateSharePermission']);
+$router->get('/album/get-permission', [GroupController::class, 'getSharePermission']);
+$router->post('/album/share', [GroupController::class, 'generateShareLink']);
+$router->get('/album/view', function() {
+    $controller = new GroupController();
+    return $controller->viewSharedAlbum();
+});
+
+
+$router->get('/photos', [PhotoController::class, 'showPhotos']);
+
 $router->post('/photo/delete', [PhotoController::class, 'deletePhoto']);
 $router->post('/photo/share', [PhotoController::class, 'generateShareLink']);
 $router->get('/photo/view', [PhotoController::class, 'viewPhoto']);

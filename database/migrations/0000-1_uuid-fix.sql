@@ -1,6 +1,6 @@
 ALTER DATABASE db_buddy_shotz DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS logs, user_settings, sessions, notifications, photo_shares, comments, photo_likes, photos, group_members, `groups`, password_resets, address, email_verifications, users;
+DROP TABLE IF EXISTS logs, user_settings, sessions, notifications, album_shares, comments, photo_likes, photos, group_members, `groups`, password_resets, address, email_verifications, users;
 
 CREATE TABLE users (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
@@ -92,12 +92,14 @@ CREATE TABLE comments (
     FOREIGN KEY (photo_id) REFERENCES photos(id) ON DELETE CASCADE
 );
 
-CREATE TABLE photo_shares (
+CREATE TABLE album_shares (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-    photo_id CHAR(36) NOT NULL,
+    album_id CHAR(36) NOT NULL,
     share_token VARCHAR(255) NOT NULL UNIQUE,
+    permission ENUM('read_only', 'can_upload') NOT NULL DEFAULT 'read_only',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at DATETIME DEFAULT NULL,
-    FOREIGN KEY (photo_id) REFERENCES photos(id) ON DELETE CASCADE
+    FOREIGN KEY (album_id) REFERENCES `groups`(id) ON DELETE CASCADE
 );
 
 CREATE TABLE notifications (

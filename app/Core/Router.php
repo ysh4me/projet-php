@@ -25,56 +25,60 @@ class Router {
         $this->routes['DELETE'][$uri] = $controller;
     }
 
-    public function route($requestUri, $requestMethod) {
+    public function route(string $requestUri, string $requestMethod) {
         $uri = strtok($requestUri, '?');
-        $action = $this->routes[$requestMethod][$uri] ?? null;
-    
-        if (!$action) {
-            http_response_code(404);
-            echo '404 Not Found';
-            exit;
-        }
-    
-        if ($action instanceof \Closure) {
-            echo $action();
-            return;
-        }
-    
-        if (is_string($action)) {
-            [$controller, $method] = explode('@', $action);
-            $controller = "App\\Controllers\\$controller";
-    
-            if (!class_exists($controller)) {
-                throw new \Exception("Controller not found: $controller");
+
+        foreach ($this->routes[$requestMethod] as $route => $action) {
+            $pattern = preg_replace('#\{[^}]+\}#', '([^/]+)', $route);
+            $pattern = "#^" . $pattern . "$#";
+
+            if (preg_match($pattern, $uri, $matches)) {
+                array_shift($matches); 
+
+                if ($action instanceof \Closure) {
+                    echo call_user_func_array($action, $matches);
+                    return;
+                }
+
+                if (is_string($action)) {
+                    [$controller, $method] = explode('@', $action);
+                    $controller = "App\\Controllers\\$controller";
+
+                    if (!class_exists($controller)) {
+                        throw new \Exception("Controller introuvable : $controller");
+                    }
+
+                    if (!method_exists($controller, $method)) {
+                        throw new \Exception("Méthode introuvable : $method dans le controller $controller");
+                    }
+
+                    $instance = new $controller();
+                    echo call_user_func_array([$instance, $method], $matches);
+                    return;
+                }
+
+                if (is_array($action) && count($action) === 2) {
+                    [$controller, $method] = $action;
+
+                    if (!class_exists($controller)) {
+                        throw new \Exception("Classe du controller introuvable : $controller");
+                    }
+
+                    if (!method_exists($controller, $method)) {
+                        throw new \Exception("Méthode introuvable : $method dans le controller $controller");
+                    }
+
+                    $instance = new $controller();
+                    echo call_user_func_array([$instance, $method], $matches);
+                    return;
+                }
             }
-    
-            if (!method_exists($controller, $method)) {
-                throw new \Exception("Method not found: $method in controller $controller");
-            }
-    
-            $instance = new $controller();
-            echo $instance->$method();
-            return;
         }
-    
-        if (is_array($action) && count($action) === 2) {
-            [$controller, $method] = $action;
-            
-            if (!class_exists($controller)) {
-                throw new \Exception("Controller class not found: $controller");
-            }
-    
-            if (!method_exists($controller, $method)) {
-                throw new \Exception("Method not found: $method in controller $controller");
-            }
-    
-            $instance = new $controller();
-            echo $instance->$method();
-            return;
-        }
-    
-        throw new \Exception("Invalid route definition for URI: $uri");
-    }    
+
+        http_response_code(404);
+        echo '404 Not Found';
+        exit;
+    }
 
     public function getRoutes(): array {
         return $this->routes;

@@ -26,6 +26,13 @@
         margin-bottom: 1rem;
     }
 
+    .error-text {
+        color: color.adjust($danger-color, $lightness: -10%);
+        font-size: 0.875rem;
+        margin-top: 0.3rem;
+        text-align: left;
+    }    
+
     input {
         @extend .form-input !optional;
     }

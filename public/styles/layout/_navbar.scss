@@ -127,7 +127,7 @@
 // Responsive
 @media (max-width: 1024px) {
     .nav-links {
-        display: none;
+        display: none !important;
     }
 
     .menu-toggle {
@@ -169,7 +169,7 @@
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 1024px) {
     .menu-toggle {
         display: flex !important; 
     }

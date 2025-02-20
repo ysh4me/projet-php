@@ -3,49 +3,48 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../../Core/helpers.php';
+require_once __DIR__ . '/../../Core/Helpers.php';
 ?>
 
 <?php include __DIR__ . '/../partials/head.php'; ?>
 <?php include __DIR__ . '/../partials/navbar.php'; ?>
 
-<div class="container">
-    <div class="auth-page">
-        <div class="form-container">
-            <h2>Connexion</h2>
+<main>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1>Connexion</h1>
 
-            <?php if (!empty($_SESSION['error'])): ?>
-                <div class="form-error">
-                    <ul>
-                        <?php foreach ($_SESSION['error'] as $error): ?>
-                            <li><?= escape($error) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
+            <?php if (!empty($_SESSION['error']['global'])): ?>
+                <div class="error-message">
+                    <p><?= escape($_SESSION['error']['global']) ?></p>
                 </div>
-                <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
             <form action="/login" method="POST">
                 <input type="hidden" name="csrf_token" value="<?= escape($_SESSION['csrf_token'] ?? '') ?>">
 
-                <div class="form-group">
-                    <label for="email">Email :</label>
-                    <input type="email" id="email" name="email" value="<?= isset($_POST['email']) ? escape($_POST['email']) : '' ?>" required>
-                </div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="<?= isset($_SESSION['old_input']['email']) ? escape($_SESSION['old_input']['email']) : '' ?>" required>
+                <?php if (!empty($_SESSION['error']['email'])): ?>
+                    <p class="error-text"><?= escape($_SESSION['error']['email']) ?></p>
+                <?php endif; ?>
 
-                <div class="form-group">
-                    <label for="password">Mot de passe :</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" required>
+                <?php if (!empty($_SESSION['error']['password'])): ?>
+                    <p class="error-text"><?= escape($_SESSION['error']['password']) ?></p>
+                <?php endif; ?>
 
-                <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+                <button type="submit">Se connecter</button>
 
-                <div class="form-footer">
-                    <a href="/forgot-password" class="btn-link">Mot de passe oublié ?</a>
-                </div>
+                <p><a href="/forgot-password">Mot de passe oublié ?</a></p>
             </form>
         </div>
     </div>
-</div>
+</main>
+<?php 
+    unset($_SESSION['error']); 
+    unset($_SESSION['old_input']);
+?>
 
 <?php include __DIR__ . '/../partials/footer.php'; ?>
