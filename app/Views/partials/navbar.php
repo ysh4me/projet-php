@@ -27,7 +27,7 @@
         </button>
 
         <div id="mobile-menu" class="mobile-menu">
-            <button id="close-menu" class="close-btn">✖</button>
+            <button id="close-menu" class="close-btn"></button>
             <ul>
                 <li><a href="/">Accueil</a></li>
                 <?php if (!empty($_SESSION['user']) && isset($_SESSION['user']['firstname'])): ?>

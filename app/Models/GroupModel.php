@@ -8,6 +8,12 @@ class GroupModel
 {
     private PDO $pdo;
 
+    public function getPdo(): PDO
+    {
+        return $this->pdo;
+    }
+
+
     public function __construct()
     {
         $dsn = 'mysql:host=' . $_ENV['DB_HOST'] . ';dbname=' . $_ENV['DB_NAME'] . ';charset=utf8mb4';
@@ -98,33 +104,58 @@ class GroupModel
         $query = "SELECT share_token FROM album_shares WHERE album_id = :album_id LIMIT 1";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([':album_id' => $albumId]);
-
+    
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['share_token'] : null;
     }
-
-
-    public function saveShareLink(string $albumId, string $shareToken): bool
+    
+    public function saveShareLink(string $albumId, string $shareToken, string $permission): bool
     {
-        $query = "INSERT INTO album_shares (id, album_id, share_token, created_at) 
-                  VALUES (UUID(), :album_id, :share_token, NOW())";
+        $query = "INSERT INTO album_shares (album_id, share_token, permission, created_at) 
+                  VALUES (:album_id, :share_token, :permission, NOW())
+                  ON DUPLICATE KEY UPDATE 
+                  permission = :permission"; 
+    
         $stmt = $this->pdo->prepare($query);
         return $stmt->execute([
             ':album_id' => $albumId,
-            ':share_token' => $shareToken
+            ':share_token' => $shareToken,
+            ':permission' => $permission
         ]);
     }
     
+    
     public function getAlbumByToken(string $shareToken): ?array
     {
-        $query = "SELECT g.id, g.name, g.owner_id 
+        $query = "SELECT g.id, g.name, g.owner_id, s.permission
                   FROM album_shares s 
                   JOIN `groups` g ON s.album_id = g.id 
-                  WHERE s.share_token = :share_token";
+                  WHERE s.share_token = :share_token LIMIT 1";
+    
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([':share_token' => $shareToken]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
     
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        if (!$result) {
+            return null;
+        }
+    
+        return $result;
+    }
+
+    public function getAlbums(string $userId): array
+    {
+        $query = "SELECT g.*, 
+                         CASE 
+                             WHEN EXISTS (SELECT 1 FROM album_shares WHERE album_shares.album_id = g.id) 
+                             THEN 1 ELSE 0 
+                         END AS is_shared
+                  FROM `groups` g
+                  WHERE g.owner_id = :user_id OR g.id IN (SELECT album_id FROM album_shares)";
+    
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([':user_id' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }

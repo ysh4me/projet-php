@@ -10,66 +10,84 @@ require_once __DIR__ . '/../Core/Helpers.php';
 <body>
     <?php include __DIR__ . '/partials/navbar.php'; ?>
 
-    <section class="albums">
-        <div class="container">
-            <div class="albums-header">
-                <h1>Albums</h1>
-                <div class="actions">
-                    <button id="openModalBtn" class="btn-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"/>
-                        </svg>
-                        Créer un album
-                    </button>
+    <main>
+        <section class="albums">
+            <div class="container">
+                <div class="albums-header">
+                    <h1>Albums</h1>
+                    <div class="actions">
+                        <button id="openModalBtn" class="btn-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"/>
+                            </svg>
+                            Créer un album
+                        </button>
 
+                    </div>
                 </div>
-            </div>
 
-            <div class="filters">
-                <button class="filter-btn active">✓ Tous les éléments</button>
-                <button class="filter-btn">Mes albums</button>
-                <button class="filter-btn">Éléments partagés avec moi</button>
-            </div>
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all">Tous les éléments</button>
+                    <button class="filter-btn" data-filter="shared-by-me">Mes albums partagés</button>
+                    <button class="filter-btn" data-filter="shared-with-me">Éléments partagés avec moi</button>
+                </div>
 
-            <div class="albums-grid">
-                <?php foreach ($groups as $group): ?>
-                    <div class="album-card" 
-                        data-group-id="<?= escape($group['id']) ?>"
-                        data-group-name="<?= escape($group['name']) ?>"
-                        data-photos='<?= json_encode(array_column($group["photos"], "filename")) ?>'>
 
-                        <div class="album-header">
-                            <h2><?= escape($group['name']) ?></h2>
-                            <div class="album-options">
-                                <button class="options-btn">⋮</button>
-                                <div class="options-menu">
-                                    <button class="edit-album" data-group-id="<?= escape($group['id']) ?>">Modifier</button>
-                                    <button class="share-album" data-group-id="<?= escape($group['id']) ?>">Partager</button>
-                                    <button class="delete-album" data-group-id="<?= escape($group['id']) ?>">Supprimer</button>
+                <div class="albums-grid">
+                    <?php foreach ($groups as $group): ?>
+                        <div class="album-card" 
+                            data-group-id="<?= escape($group['id']) ?>"
+                            data-group-name="<?= escape($group['name']) ?>"
+                            data-is-shared="<?= isset($group['is_shared']) ? (int) $group['is_shared'] : 0 ?>"
+                            data-shared-with-me="<?= isset($group['shared_with_me']) ? (int) $group['shared_with_me'] : 0 ?>"
+                            data-photos='<?= json_encode(array_column($group["photos"], "filename")) ?>'>
+
+
+                            <div class="album-header">
+                                <h2><?= escape($group['name']) ?></h2>
+                                <div class="album-options">
+                                    <button class="options-btn">⋮</button>
+                                    <div class="options-menu">
+                                        <button class="edit-album" data-group-id="<?= escape($group['id']) ?>">Modifier</button>
+                                        <button class="share-album" data-group-id="<?= escape($group['id']) ?>">Partager</button>
+                                        <button class="delete-album" data-group-id="<?= escape($group['id']) ?>">Supprimer</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="album-preview">
-                            <?php if (!empty($group['photos'])): ?>
-                                <?php foreach ($group['photos'] as $photo): ?>
-                                    <div class="photo-square">
-                                        <img src="/uploads/<?= escape($photo['filename']) ?>" alt="Photo de l'album">
+                            <div class="album-preview">
+                                <?php if (!empty($group['photos'])): ?>
+                                    <?php foreach ($group['photos'] as $photo): ?>
+                                        <div class="photo-square">
+                                            <img src="/uploads/<?= escape($photo['filename']) ?>" alt="Photo de l'album">
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="photo-square placeholder">
+                                        <img src="/images/placeholder.jpg" alt="Aucune photo">
                                     </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="photo-square placeholder">
-                                    <img src="/images/placeholder.jpg" alt="Aucune photo">
+                                <?php endif; ?>
+                            </div>
+
+                            <p><?= $group['photo_count'] ?> élément(s)</p>
+
+                            <?php if (!empty($group['is_shared'])): ?>
+                                <div class="shared-icon visible" title="Album partagé">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+                                    <path fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0m12-6a3 3 0 1 0 6 0a3 3 0 1 0-6 0m0 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0m-6.3-7.3l6.6-3.4m-6.6 6l6.6 3.4" />
+                                </svg>
                                 </div>
                             <?php endif; ?>
-                        </div>
-                        <p><?= $group['photo_count'] ?> élément(s)</p>
-                    </div>
-                <?php endforeach; ?>
-            </div>
 
-        </div>
-    </section>
+                        </div>
+
+
+                    <?php endforeach; ?>
+                </div>
+
+            </div>
+        </section>
+    </main>
 
     <!-- modals -->
     <div id="modalAlbum" class="modal">
@@ -174,17 +192,17 @@ require_once __DIR__ . '/../Core/Helpers.php';
             <div class="modal-body">
                 <p>Copiez ce lien pour partager l'album</p>
                 <input type="text" id="shareLink" readonly>
+                <p id="permissionInfo"></p>
                 <button id="copyShareLink" class="btn-primary">Copier</button>
+
+                <label class="checkbox-container">
+                    <input type="checkbox" id="toggleUploadPermission" data-album-id="" >
+                    <span class="checkmark"></span>
+                    Autoriser l'ajout de photos
+                </label>
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
 
     <?php include __DIR__ . '/partials/footer.php'; ?>
 
