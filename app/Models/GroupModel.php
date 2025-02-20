@@ -88,7 +88,6 @@ class GroupModel
         ]);
     }
     
-
     public function deleteGroup(string $groupId, string $userId): bool
     {
         $query = "DELETE FROM `groups` WHERE id = :group_id AND owner_id = :user_id";
@@ -152,10 +151,11 @@ class GroupModel
                          END AS is_shared
                   FROM `groups` g
                   WHERE g.owner_id = :user_id OR g.id IN (SELECT album_id FROM album_shares)";
-    
+        
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([':user_id' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 
 }

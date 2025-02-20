@@ -118,29 +118,15 @@ class PhotoController extends Controller
             exit;
         }
     
-        $userId = $_SESSION['user']['id'];
         $data = json_decode(file_get_contents("php://input"), true);
     
-        if (!isset($data['photo_id']) || empty($data['photo_id'])) {
+        if (!isset($data['photo_id'])) {
             echo json_encode(["error" => "Photo introuvable."]);
             exit;
         }
     
         $photoId = $data['photo_id'];
-        $photo = $this->photoModel->getPhotoById($photoId);
-    
-        if (!$photo || $photo['user_id'] !== $userId) {
-            echo json_encode(["error" => "Vous ne pouvez supprimer que vos propres photos."]);
-            exit;
-        }
-    
-        $filePath = __DIR__ . "/../../public/uploads/" . $photo['filename'];
-    
-        if (file_exists($filePath)) {
-            unlink($filePath);
-        }
-    
-        $deleted = $this->photoModel->deletePhoto($photoId);
+        $deleted = $this->photoModel->deletePhoto($photoId, $_SESSION['user']['id']);
     
         if ($deleted) {
             echo json_encode(["success" => "Photo supprimée avec succès."]);
@@ -150,6 +136,7 @@ class PhotoController extends Controller
     
         exit;
     }
+    
     
 
     public function generateShareLink()
