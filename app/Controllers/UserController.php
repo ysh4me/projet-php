@@ -44,14 +44,15 @@ class UserController extends Controller
         $apiKey = $_ENV['MJ_APIKEY_PUBLIC'] ?? null;
         $apiSecret = $_ENV['MJ_APIKEY_PRIVATE'] ?? null;
         $senderEmail = $_ENV['SENDER_EMAIL'] ?? null;
-
+    
         if (!$apiKey || !$apiSecret || !$senderEmail) {
+            error_log("Mailjet API non configurée correctement.");
             die("Erreur : Clé API Mailjet ou email expéditeur introuvable !");
         }
-
+    
         try {
             $mj = new Client($apiKey, $apiSecret, true, ['version' => 'v3.1']);
-
+    
             $body = [
                 'Messages' => [
                     [
@@ -70,18 +71,25 @@ class UserController extends Controller
                     ]
                 ]
             ];
-
+    
+            error_log("Tentative d'envoi d'email à : $email");
+    
             $response = $mj->post(Resources::$Email, ['body' => $body]);
-
+    
             if (!$response->success()) {
-                throw new \Exception("Échec de l'envoi de l'email : " . json_encode($response->getData(), JSON_PRETTY_PRINT));
+                error_log("Échec de l'envoi de l'email : " . json_encode($response->getData(), JSON_PRETTY_PRINT));
+                throw new \Exception("Échec de l'envoi de l'email.");
+            } else {
+                error_log("Email envoyé avec succès !");
             }
-
+    
         } catch (\Exception $e) {
+            error_log("Erreur lors de l'envoi de l'email : " . $e->getMessage());
             echo json_encode(["error" => "Erreur lors de l'envoi de l'email : " . $e->getMessage()]);
             exit;
         }
     }
+    
 
     private function sendEmail(string $email, string $subject, string $emailContent)
     {
@@ -192,34 +200,53 @@ class UserController extends Controller
         $userCreated = $this->userModel->createUser($firstname, $lastname, $username, $email, $hashedPassword);
     
         if ($userCreated) {
-            $_SESSION['success'] = "Inscription réussie ! Un email de validation a été envoyé.";
-            header("Location: /login");
+            $verificationToken = bin2hex(random_bytes(32));
+            $this->userModel->storeEmailVerificationToken($email, $verificationToken);
+    
+            $verificationLink = $_ENV['APP_URL'] . "/verify-email?token=" . urlencode($verificationToken);
+    
+            ob_start();
+            include __DIR__ . "/../Views/emails/verification_email.php";
+            $emailContent = ob_get_clean();
+    
+            $this->sendVerificationEmail($email, $emailContent);
+    
+            require_once __DIR__ . '/../Views/email_confirmation.php';
+            exit;
+        } else {
+            $_SESSION['error']['global'] = "Erreur lors de l'inscription. Veuillez réessayer.";
+            header("Location: /register");
             exit;
         }
-    }    
+    }
 
     public function verifyEmail()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             http_response_code(405);
-            echo json_encode(["error" => "Méthode non autorisée."]);
+            $_SESSION['error']['global'] = "Méthode non autorisée.";
+            header("Location: /");
             exit;
         }
     
         $token = $_GET['token'] ?? '';
     
         if (empty($token)) {
-            echo json_encode(["error" => "Token invalide."]);
+            $_SESSION['error']['global'] = "Token invalide.";
+            header("Location: /");
             exit;
         }
     
         if ($this->userModel->verifyEmail($token)) {
-            echo json_encode(["success" => "Votre email a été validé. Vous pouvez maintenant vous connecter."]);
+            require_once __DIR__ . '/../Views/email_verified.php';
+            exit;
         } else {
-            echo json_encode(["error" => "Token invalide ou expiré."]);
+            $_SESSION['error']['global'] = "Token invalide ou expiré.";
+            header("Location: /");
+            exit;
         }
-        exit;
     }
+    
 
     public function login()
     {
@@ -319,7 +346,7 @@ class UserController extends Controller
             exit;
         }
 
-        require_once __DIR__ . '/../Views/reset_password.php';
+        require_once __DIR__ . '/../Views/authentification/reset_password.php';
     }
 
 

@@ -96,13 +96,17 @@ class PhotoModel
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function deletePhoto(string $photoId): bool
+    public function deletePhoto(string $photoId, string $userId): bool
     {
-        $query = "DELETE FROM photos WHERE id = :photo_id";
+        $query = "DELETE FROM photos WHERE id = :photo_id AND user_id = :user_id";
         $stmt = $this->pdo->prepare($query);
-        return $stmt->execute([':photo_id' => $photoId]);
+        return $stmt->execute([
+            ':photo_id' => $photoId,
+            ':user_id' => $userId
+        ]);
     }
-
+    
+    
     public function saveShareLink(string $photoId, string $shareToken): bool
     {
         $query = "INSERT INTO photo_shares (id, photo_id, share_token, expires_at) 

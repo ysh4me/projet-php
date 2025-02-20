@@ -6,8 +6,8 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../Core/Helpers.php';
 ?>
 
-<?php include __DIR__ . '/partials/head.php'; ?>
-<?php include __DIR__ . '/partials/navbar.php'; ?>
+<?php include __DIR__ . '/../partials/head.php'; ?>
+<?php include __DIR__ . '/../partials/navbar.php'; ?>
 
 <main>
     <div class="auth-container">
@@ -42,4 +42,4 @@ require_once __DIR__ . '/../../Core/Helpers.php';
         </div>
     </div>
 </main>
-<?php include __DIR__ . '/partials/footer.php'; ?>
+<?php include __DIR__ . '/../partials/footer.php'; ?>

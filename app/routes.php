@@ -25,7 +25,7 @@ $router->get('/logout', [UserController::class, 'logout']);
 $router->get('/verify-email', 'UserController@verifyEmail');
 
 $router->get('/forgot-password', function() {
-    require_once '../app/Views/forgot_password.php';
+    require_once '../app/Views/authentification/forgot_password.php';
 });
 
 $router->post('/forgot-password', [UserController::class, 'forgotPassword']);

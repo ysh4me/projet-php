@@ -32,7 +32,7 @@
 }
 
 .btn-secondary {
-    @include button-style($dark-text, white);
+    @include button-style(color.adjust($dark-text, $lightness: -10%));
 
     &:hover {
         background: color.adjust($dark-text, $lightness: -15%);

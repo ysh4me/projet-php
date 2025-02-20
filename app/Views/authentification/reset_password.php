@@ -8,9 +8,9 @@ require_once __DIR__ . '/../../Core/Helpers.php';
 $token = $_GET['token'] ?? '';
 ?>
 
-<?php include __DIR__ . '/partials/head.php'; ?>
+<?php include __DIR__ . '/../partials/head.php'; ?>
 
-<?php include __DIR__ . '/partials/navbar.php'; ?>
+<?php include __DIR__ . '/../partials/navbar.php'; ?>
 
 <main>
     <div class="auth-container">
@@ -57,4 +57,4 @@ $token = $_GET['token'] ?? '';
     </div>
 </main>
 
-<?php include __DIR__ . '/partials/footer.php'; ?>
+<?php include __DIR__ . '/../partials/footer.php'; ?>
