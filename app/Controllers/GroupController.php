@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\GroupModel;
 use App\Models\PhotoModel;
+use PDO;
 
 class GroupController extends Controller
 {
@@ -34,21 +35,16 @@ class GroupController extends Controller
         }
     
         $userId = $_SESSION['user']['id'];
-        $groups = $this->groupModel->getUserGroups($userId);
+        $groups = $this->groupModel->getAlbums($userId); 
     
-        $uniqueGroups = [];
-        foreach ($groups as $group) {
-            if (!isset($uniqueGroups[$group['id']])) { 
-                $group['photos'] = $this->photoModel->getAlbumPhotos($group['id']); 
-                $group['photo_count'] = $this->photoModel->countPhotosInAlbum($group['id']);
-                $uniqueGroups[$group['id']] = $group;
-            }
+        foreach ($groups as &$group) {
+            $group['photos'] = $this->photoModel->getAlbumPhotos($group['id']); 
+            $group['photo_count'] = $this->photoModel->countPhotosInAlbum($group['id']);
         }
     
-        $groups = array_values($uniqueGroups);
-
         require_once '../app/Views/groups.php';
     }
+    
     
 
     public function createGroup()
@@ -155,50 +151,147 @@ class GroupController extends Controller
         header('Content-Type: application/json');
     
         if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            http_response_code(403);
             echo json_encode(["error" => "Vous devez être connecté pour partager un album."]);
             exit;
         }
     
         $data = json_decode(file_get_contents("php://input"), true);
     
-        if (!isset($data['album_id'])) {
-            echo json_encode(["error" => "Album introuvable."]);
+        if (!isset($data['album_id']) || !isset($data['permission'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Album introuvable ou permission non définie."]);
             exit;
         }
     
         $albumId = $data['album_id'];
+        $permission = in_array($data['permission'], ['read_only', 'can_upload']) ? $data['permission'] : 'read_only';
     
-        $existingShareToken = $this->groupModel->getExistingShareLink($albumId);
+        $query = "SELECT id FROM `groups` WHERE id = :album_id";
+        $stmt = $this->groupModel->getPdo()->prepare($query);
+        $stmt->execute([':album_id' => $albumId]);
     
-        if ($existingShareToken) {
+        if (!$stmt->fetch()) {
+            http_response_code(404);
+            echo json_encode(["error" => "Album introuvable."]);
+            exit;
+        }
+    
+        $existingToken = $this->groupModel->getExistingShareLink($albumId);
+        
+        if ($existingToken) {
             echo json_encode([
-                "success" => "Lien existant retrouvé.",
-                "share_url" => $_ENV['APP_URL'] . "/album/view/$existingShareToken"
+                "success" => "Lien déjà existant.",
+                "share_url" => $_ENV['APP_URL'] . "/album/view?token=$existingToken",
+                "permission" => $permission
             ]);
             exit;
         }
     
         $shareToken = bin2hex(random_bytes(16));
-        $saved = $this->groupModel->saveShareLink($albumId, $shareToken);
+        $saved = $this->groupModel->saveShareLink($albumId, $shareToken, $permission);
     
         if ($saved) {
             echo json_encode([
                 "success" => "Lien généré avec succès.",
-                "share_url" => $_ENV['APP_URL'] . "/album/view?token=$shareToken"
+                "share_url" => $_ENV['APP_URL'] . "/album/view/$shareToken",
+                "permission" => $permission
             ]);
         } else {
+            http_response_code(500);
             echo json_encode(["error" => "Erreur lors de la génération du lien de partage."]);
         }
     
         exit;
-    }    
+    }
 
-    public function viewSharedAlbum($token)
+    public function updateSharePermission()
     {
-        if (empty($token)) {
+        header('Content-Type: application/json');
+    
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            http_response_code(403);
+            echo json_encode(["error" => "Vous devez être connecté pour modifier la permission."]);
+            exit;
+        }
+    
+        $data = json_decode(file_get_contents("php://input"), true);
+    
+        if (!isset($data['album_id']) || !isset($data['permission'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Album ID ou permission non définis."]);
+            exit;
+        }
+    
+        $albumId = $data['album_id'];
+        $newPermission = in_array($data['permission'], ['read_only', 'can_upload']) ? $data['permission'] : 'read_only';
+    
+        $existingToken = $this->groupModel->getExistingShareLink($albumId);
+    
+        if (!$existingToken) {
+            http_response_code(404);
+            echo json_encode(["error" => "Album introuvable ou non partagé."]);
+            exit;
+        }
+    
+        $updated = $this->groupModel->saveShareLink($albumId, $existingToken, $newPermission);
+    
+        if ($updated) {
+            echo json_encode(["success" => "Permission mise à jour.", "new_permission" => $newPermission]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["error" => "Erreur lors de la mise à jour de la permission."]);
+        }
+    
+        exit;
+    }
+
+    public function getSharePermission()
+    {
+        header('Content-Type: application/json');
+    
+        if (!isset($_GET['album_id']) || empty($_GET['album_id'])) {
+            http_response_code(400);
+            echo json_encode(["error" => "Album ID manquant."]);
+            exit;
+        }
+    
+        $albumId = $_GET['album_id'];
+    
+        $query = "SELECT permission, share_token FROM album_shares WHERE album_id = :album_id LIMIT 1";
+        $stmt = $this->groupModel->getPdo()->prepare($query);
+        $stmt->execute([':album_id' => $albumId]);
+        $album = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        if (!$album) {
+            http_response_code(404);
+            echo json_encode(["error" => "Album non trouvé ou non partagé."]);
+            exit;
+        }
+    
+        echo json_encode([
+            "success" => true,
+            "permission" => $album['permission'],
+            "share_url" => $_ENV['APP_URL'] . "/album/view?token=" . $album['share_token']
+        ]);
+        exit;
+    }
+    
+
+    
+    public function viewSharedAlbum()
+    {
+        if (!isset($_GET['token']) || empty($_GET['token'])) {
             die("Lien invalide.");
         }
     
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour voir un album partagé.";
+            header("Location: /login");
+            exit;
+        }
+    
+        $token = $_GET['token'];
         $album = $this->groupModel->getAlbumByToken($token);
     
         if (!$album) {
@@ -206,11 +299,9 @@ class GroupController extends Controller
         }
     
         $album['photos'] = $this->photoModel->getAlbumPhotos($album['id']);
+        $permission = $album['permission']; 
     
         require_once '../app/Views/view_album.php';
     }
-    
-    
-
 
 }

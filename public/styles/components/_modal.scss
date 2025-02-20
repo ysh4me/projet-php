@@ -135,6 +135,20 @@
                     background: color.adjust($primary-color, $lightness: -10%);
                 }
             }
+
+            .checkbox-container {
+                display: flex;
+                align-items: center;
+                margin-top: 1rem;
+                font-weight: bold;
+                cursor: pointer;
+            
+                input {
+                    margin-right: 10px;
+                    cursor: pointer;
+                }
+            }
+            
         }
 
         .modal-actions {

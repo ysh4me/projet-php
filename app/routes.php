@@ -31,9 +31,6 @@ $router->get('/forgot-password', function() {
 $router->post('/forgot-password', [UserController::class, 'forgotPassword']);
 $router->get('/reset-password', [UserController::class, 'resetPassword']);
 $router->post('/update-password', [UserController::class, 'updatePassword']);
-$router->post('/album/share', [GroupController::class, 'generateShareLink']);
-$router->get('/album/view/{token}', [GroupController::class, 'viewSharedAlbum']);
-
 
 // upload des photos
 $router->get('/photo/upload', function() {
@@ -58,6 +55,13 @@ $router->get('/albums', [GroupController::class, 'index']);
 $router->post('/album/create', [GroupController::class, 'createGroup']);
 $router->post('/album/delete', [GroupController::class, 'deleteAlbum']);
 $router->post('/album/update', [GroupController::class, 'updateAlbum']);
+$router->post('/album/update-permission', [GroupController::class, 'updateSharePermission']);
+$router->get('/album/get-permission', [GroupController::class, 'getSharePermission']);
+$router->post('/album/share', [GroupController::class, 'generateShareLink']);
+$router->get('/album/view', function() {
+    $controller = new GroupController();
+    return $controller->viewSharedAlbum();
+});
 
 
 $router->get('/photos', [PhotoController::class, 'showPhotos']);

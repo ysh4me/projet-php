@@ -96,6 +96,7 @@ CREATE TABLE album_shares (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     album_id CHAR(36) NOT NULL,
     share_token VARCHAR(255) NOT NULL UNIQUE,
+    permission ENUM('read_only', 'can_upload') NOT NULL DEFAULT 'read_only',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at DATETIME DEFAULT NULL,
     FOREIGN KEY (album_id) REFERENCES `groups`(id) ON DELETE CASCADE

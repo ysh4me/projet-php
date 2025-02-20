@@ -60,6 +60,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
+            color: $dark-text;
             
             &.active {
                 background: #E3ECF7;
@@ -81,6 +82,8 @@
     }
     
     .album-card {
+        width: 100%;
+        max-width: 20rem;
         position: relative;
         background: white;
         border-radius: 1rem;
@@ -196,6 +199,27 @@
             color: $primary-color;
             margin: 0.5rem 0 0;
         }
+
+        .shared-icon {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+            
+            svg {
+                width: 16px;
+                height: 16px;
+                stroke: $primary-color;
+            }
+    
+        }
+    
     }
     
       
@@ -214,6 +238,6 @@
     }
 
     .albums-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); 
     }
 }

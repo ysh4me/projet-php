@@ -207,23 +207,67 @@ document.addEventListener("DOMContentLoaded", function () {
     
         const albumId = event.target.dataset.groupId;
     
-        fetch("/album/share", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ album_id: albumId })
+        fetch(`/album/get-permission?album_id=${albumId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP : ${response.status}`);
+            }
+            return response.json();
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(data => {    
             if (data.success) {
                 const shareLinkInput = document.getElementById("shareLink");
                 shareLinkInput.value = data.share_url;
                 document.getElementById("modalShareAlbum").style.display = "flex";
+    
+                const toggleUploadPermission = document.getElementById("toggleUploadPermission");
+                toggleUploadPermission.checked = (data.permission === "can_upload");
+                toggleUploadPermission.dataset.albumId = albumId;
+    
+                document.getElementById("permissionInfo").innerText = data.permission === "can_upload"
+                    ? "Les utilisateurs peuvent ajouter des photos."
+                    : "Les utilisateurs ne peuvent que voir l'album.";
             } else {
                 alert("Erreur : " + data.error);
             }
         })
         .catch(error => console.error("Erreur :", error));
     });
+    
+    
+    
+    
+    document.getElementById("toggleUploadPermission").addEventListener("change", function () {
+        const albumId = this.dataset.albumId;
+        if (!albumId) {
+            alert("Erreur : Aucun album sélectionné.");
+            return;
+        }
+    
+        const newPermission = this.checked ? "can_upload" : "read_only";
+    
+        fetch("/album/update-permission", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ album_id: albumId, permission: newPermission })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("permissionInfo").innerText = newPermission === "can_upload"
+                    ? "Les utilisateurs peuvent ajouter des photos."
+                    : "Les utilisateurs ne peuvent que voir l'album.";
+            } else {
+                alert("Erreur : " + data.error);
+                this.checked = !this.checked; 
+            }
+        })
+        .catch(error => {
+            console.error("Erreur :", error);
+            this.checked = !this.checked;
+        });
+    });
+    
     
     document.getElementById("copyShareLink").addEventListener("click", function () {
         const shareLinkInput = document.getElementById("shareLink");
@@ -235,6 +279,5 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("closeShareModal").addEventListener("click", function () {
         document.getElementById("modalShareAlbum").style.display = "none";
     });
-    
 
 });

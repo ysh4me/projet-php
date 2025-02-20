@@ -892,6 +892,17 @@ button:hover,
 .modal .modal-content .modal-body button:hover {
   background: rgb(253.7213114754, 23.5573770492, 22.2786885246);
 }
+.modal .modal-content .modal-body .checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal .modal-content .modal-body .checkbox-container input {
+  margin-right: 10px;
+  cursor: pointer;
+}
 .modal .modal-content .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -1213,6 +1224,27 @@ footer a:hover {
     gap: 0.8rem;
   }
 }
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+footer {
+  width: 100%;
+  position: relative;
+  bottom: 0;
+  left: 0;
+}
+
 .hero {
   background: linear-gradient(to right, #FE4A49, #FCD807);
   color: white;
@@ -1639,6 +1671,7 @@ footer a:hover {
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+  color: #111212;
 }
 .albums .filters .filter-btn.active {
   background: #E3ECF7;
@@ -1655,6 +1688,8 @@ footer a:hover {
   margin-top: 1rem;
 }
 .albums .album-card {
+  width: 100%;
+  max-width: 20rem;
   position: relative;
   background: white;
   border-radius: 1rem;
@@ -1756,6 +1791,23 @@ footer a:hover {
   color: #FE4A49;
   margin: 0.5rem 0 0;
 }
+.albums .album-card .shared-icon {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+.albums .album-card .shared-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: #FE4A49;
+}
 
 @media (max-width: 768px) {
   .albums-header {
@@ -1767,7 +1819,7 @@ footer a:hover {
     flex-direction: column;
   }
   .albums-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   }
 }
 * {
