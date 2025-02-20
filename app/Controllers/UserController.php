@@ -202,21 +202,25 @@ class UserController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             http_response_code(405);
-            echo json_encode(["error" => "Méthode non autorisée."]);
+            $_SESSION['error'] = ["Méthode non autorisée."];
+            header("Location: /login");
             exit;
         }
     
         $token = $_GET['token'] ?? '';
     
         if (empty($token)) {
-            echo json_encode(["error" => "Token invalide."]);
+            $_SESSION['error'] = ["Token invalide."];
+            header("Location: /login");
             exit;
         }
     
         if ($this->userModel->verifyEmail($token)) {
-            echo json_encode(["success" => "Votre email a été validé. Vous pouvez maintenant vous connecter."]);
+            $_SESSION['success'] = "Votre email a été validé. Vous pouvez maintenant vous connecter.";
+            header("Location: /login");
         } else {
-            echo json_encode(["error" => "Token invalide ou expiré."]);
+            $_SESSION['error'] = ["Token invalide ou expiré."];
+            header("Location: /login");
         }
         exit;
     }
@@ -438,5 +442,4 @@ class UserController extends Controller
             exit;
         }
     }
-
 }

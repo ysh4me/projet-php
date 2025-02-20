@@ -154,9 +154,9 @@ class PhotoController extends Controller
 
     public function generateShareLink()
     {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
             $_SESSION['error'] = "Vous devez être connecté pour générer un lien de partage.";
-            header("Location: /photos");
+            header("Location: /login");
             exit;
         }
 
@@ -167,7 +167,7 @@ class PhotoController extends Controller
         }
 
         $photoId = $_POST['photo_id'];
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['user']['id'];
 
         $photo = $this->photoModel->getPhotoById($photoId);
 
@@ -203,6 +203,4 @@ class PhotoController extends Controller
 
         require_once '../app/Views/view_photo.php';
     }
-
-
 }

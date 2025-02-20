@@ -5,14 +5,18 @@
 @use "../components/cards" as *;
 
 .hero {
-    background: linear-gradient(to right, $primary-color, $secondary-color);
-    color: white;
-    padding: 5rem;
     text-align: center;
+    padding: 4rem 0;
+    background: linear-gradient(
+        to right,
+        color.adjust($primary-color, $lightness: 40%),
+        color.adjust($secondary-color, $lightness: 40%)
+    );
 
     h1 {
         font-size: 3rem;
         margin-bottom: 1rem;
+        color: color.adjust($text-primary, $lightness: 10%);
     }
 
     p {
@@ -21,8 +25,8 @@
     }
 
     .btn {
-        @extend .btn-primary;
-        width: 15rem;
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
     }
 }
 
@@ -40,7 +44,7 @@
 
     p {
         font-size: 1.2rem;
-        color: color.adjust($dark-text, $lightness: 10%);
+        color: color.adjust($text-primary, $lightness: 10%);
         margin-bottom: 3rem;
         max-width: 700px;
         margin: 0 auto;
@@ -84,13 +88,13 @@
     h2 {
         font-size: 2.5rem;
         margin-bottom: 1.5rem;
-        color: $dark-text;
+        color: $text-primary;
         font-weight: bold;
     }
 
     p {
         font-size: 1.2rem;
-        color: color.adjust($dark-text, $lightness: 10%);
+        color: color.adjust($text-primary, $lightness: 10%);
         margin-bottom: 2rem;
         max-width: 700px;
         margin: 0 auto;
