@@ -21,15 +21,6 @@ sleep 10
 # Exécuter la migration de la base de données
 docker compose exec app php /var/www/html/scripts/migrate.php 0000_database-init.sql
 
-# Installer les dépendances Vitepress
-npm install
-# Lancer le serveur de développement Vitepress
-npm run docs:dev
- lien utile : https://www.figma.com/proto/uGdWLv72H10dBncCMCl2yh/Untitled?node-id=1-3&starting-point-node-id=1%3A3
-Vitepress : 
-installer les dépendance  : npm install 
-lancer : npm run docs:dev
-
 # Prototype Figma
 https://www.figma.com/proto/uGdWLv72H10dBncCMCl2yh/Untitled?node-id=1-3&starting-point-node-id=1%3A3
 Vitepress : 

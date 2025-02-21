@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "build-css": "sass public/styles/main.scss public/styles/style.css --style compressed",
-    "watch-css": "sass --watch public/styles/main.scss:public/styles/style.css"
+    "watch-css": "sass --watch public/styles/main.scss:public/styles/style.css",
+    "docs:dev": "vitepress dev vitepress",
+    "docs:build": "vitepress build vitepress",
+    "docs:preview": "vitepress preview vitepress"
   },
   "repository": {
     "type": "git",
